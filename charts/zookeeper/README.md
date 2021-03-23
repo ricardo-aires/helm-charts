@@ -18,10 +18,16 @@ This chart bootstraps an ensemble [Apache Zookeeper](https://zookeeper.apache.or
 
 ## Installing the Chart
 
+Add the [chart repository](https://helm.sh/docs/helm/helm_repo_add/), if not done before:
+
+```shell
+helm repo add rhcharts https://ricardo-aires.github.io/helm-charts/
+```
+
 To [install](https://helm.sh/docs/helm/helm_install/) the chart with the release name `zkp`:
 
 ```console
-helm install zkp charts/zookeeper
+helm install zkp rhcharts/zookeeper
 NAME: zkp
 LAST DEPLOYED: Tue Mar 23 14:50:47 2021
 NAMESPACE: default
