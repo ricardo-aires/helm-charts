@@ -1,0 +1,114 @@
+# Default values for kafka.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Default values for zookeeper.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Image Info
+## ref: https://hub.docker.com/r/confluentinc/cp-kafka
+image:
+  registry: docker.io
+  repository: confluentinc/cp-kafka
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets:  []
+nameOverride: ""
+fullnameOverride: ""
+
+## Kafka Cluster
+replicaCount: 3
+maxUnavailable: 1
+
+## Kafka Configuration
+## ref: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
+heapOpts: -Xmx1024m -Xms1024m
+confluentSupportMetricsEnable: false
+autoCreateTopicsEnable: false
+deleteTopicEnable: true
+offsetsTopicReplicationFactor: 3
+numPartitions: 3
+defaultReplicationFactor: 3
+minInsyncReplicas: 1
+uncleanLeaderElectionEnable: true
+logFlushIntervalMessages: 10000
+logFlushIntervalMs: 1000
+logRetentionBytes: 1073741824
+logRetentionCheckIntervalMs: 300000
+logRetentionHours: 168
+logSegmentBytes: 1073741824
+messageMaxBytes: 1048588
+
+## Ports used by Kafka
+## ref: https://rmoff.net/2018/08/02/kafka-listeners-explained/
+port:
+  kafkaInternal: 9092
+  kafkaExternal: 9094
+externalAccess:
+  enabled: true
+  initNodePort: 32400
+## turn to support nodePort in docker desktop
+isDocker: true
+
+## Zookeeper Configuration
+## ref: https://docs.confluent.io/platform/current/zookeeper/deployment.html
+zookeeper:
+  ## If true, install the zookeeper chart
+  enabled: true
+  ## If the Zookeeper Chart is disabled a URL and port are required to connect
+  url: ""
+
+## Data Persistence
+## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+data:
+  storageClass: 
+  storageSize: 10Gi
+
+## Configure Liveness and Readiness Probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+## Configure Pod Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+podSecurityContext:
+  fsGroup: 1000
+
+## Configure Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  capabilities:
+    drop:
+    - ALL
+
+## Configure Resources for Containers
+## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi

@@ -1,0 +1,8 @@
+** Please be patient while the {{ .Chart.Name }} chart is being deployed in release {{ .Release.Name }} **
+
+This chart bootstraps a Kafka Cluster made of {{ .Values.replicaCount | quote }} brokers using the Confluent stable version that can be accessed from within your cluster:
+
+    {{ include "kafka.fullname" . }}-headless.{{ .Release.Namespace }}:{{ .Values.port.kafkaInternal }}
+
+More info:
+https://ricardo-aires.github.io/helm-charts/charts/kafka/

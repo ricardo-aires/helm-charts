@@ -3,5 +3,8 @@
 *~
 *.log
 
+# dep packages
+charts/*/charts
+charts/*/Chart.lock
 # Cache objects
 **.vagrant/

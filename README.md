@@ -15,7 +15,10 @@ To list [available charts](https://helm.sh/docs/helm/helm_search_repo/)
 ```shell
 $ helm search repo rhcharts
 NAME              	CHART VERSION	APP VERSION	DESCRIPTION
+rhcharts/kafka   	0.1.0        	6.1.1      	A Helm chart for Confluent Kafka on Kubernetes
 rhcharts/zookeeper	0.1.0        	6.1.1      	A Helm chart for Confluent Zookeeper on Kubernetes
+
+$
 ```
 
 To [install](https://helm.sh/docs/helm/helm_install/) a specific chart
@@ -48,3 +51,4 @@ $
 Helm charts that deploy components of the [Confluent Platform](https://www.confluent.io/product/confluent-platform) (open source and community).
 
 - [Zookeeper](./charts/zookeeper/)
+- [Kafka](./charts/kafka/)

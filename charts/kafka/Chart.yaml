@@ -1,0 +1,25 @@
+apiVersion: v2
+name: kafka
+version: 0.1.0
+description: A Helm chart for Confluent Kafka on Kubernetes
+type: application
+keywords:
+  - kafka
+  - confluent
+home: https://github.com/ricardo-aires/helm-charts/kafka
+sources:
+  - https://github.com/ricardo-aires/helm-charts/kafka
+  - https://kafka.apache.org/documentation/#configuration
+  - https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
+dependencies:
+  - name: zookeeper
+    version: 0.1.0
+    repository: https://ricardo-aires.github.io/helm-charts/
+    condition: zookeeper.enabled
+    alias: zookeeper
+maintainers:
+  - name: Ricardo Henriques
+    email: ricardoaireshenriques@gmail.com
+    url: https://github.com/ricardo-aires
+icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
+appVersion: 6.1.0
