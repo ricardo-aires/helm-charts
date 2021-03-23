@@ -7,3 +7,6 @@ This chart bootstraps an ensemble Apache Zookeeper Servers made of {{ .Values.re
 To connect to your ZooKeeper server run the following commands:
 
     $ kubectl exec -it -n {{ .Release.Namespace }} {{ include "zookeeper.fullname" . }}-0 -- zookeeper-shell {{ include "zookeeper.fullname" . }}-headless.{{ .Release.Namespace }}:{{ .Values.port.client }}
+
+More info:
+https://ricardo-aires.github.io/helm-charts/charts/zookeeper/
