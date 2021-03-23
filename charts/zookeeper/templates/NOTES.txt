@@ -1,0 +1,9 @@
+** Please be patient while the {{ .Chart.Name }} chart is being deployed in release {{ .Release.Name }} **
+
+This chart bootstraps an ensemble Apache Zookeeper Servers made of {{ .Values.replicaCount | quote }} servers using the Confluent stable version that can be accessed from within your cluster:
+
+    {{ include "zookeeper.fullname" . }}-headless.{{ .Release.Namespace }}:{{ .Values.port.client }}
+
+To connect to your ZooKeeper server run the following commands:
+
+    $ kubectl exec -it -n {{ .Release.Namespace }} {{ include "zookeeper.fullname" . }}-0 -- zookeeper-shell {{ include "zookeeper.fullname" . }}-headless.{{ .Release.Namespace }}:{{ .Values.port.client }}

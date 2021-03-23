@@ -1,0 +1,28 @@
+apiVersion: v1
+entries:
+  zookeeper:
+  - apiVersion: v2
+    appVersion: 6.1.1
+    created: "2021-03-23T14:53:31.189262Z"
+    description: A Helm chart for Confluent Zookeeper on Kubernetes
+    digest: 7fc06f984feed4838cf096e2a9aec7fb9a027c5bd25d8e4b10396b08d30ed89e
+    home: https://github.com/ricardo-aires/helm-charts/zookeeper
+    icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/zookeeper.svg
+    keywords:
+    - zookeeper
+    - confluent
+    maintainers:
+    - email: ricardoaireshenriques@gmail.com
+      name: Ricardo Henriques
+      url: https://github.com/ricardo-aires
+    name: zookeeper
+    sources:
+    - https://github.com/ricardo-aires/helm-charts/zookeeper
+    - https://docs.confluent.io/platform/current/zookeeper/deployment.html
+    - https://zookeeper.apache.org/doc/current/index.html
+    - https://hub.docker.com/r/confluentinc/cp-zookeeper
+    type: application
+    urls:
+    - https://github.com/ricardo-aires/helm-charts/zookeeper-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-03-23T14:53:31.187777Z"

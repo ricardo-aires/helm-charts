@@ -1,0 +1,98 @@
+# Default values for confluent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Image Info
+## ref: https://hub.docker.com/r/confluentinc/cp-zookeeper
+image:
+  registry: docker.io
+  repository: confluentinc/cp-zookeeper
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets:  []
+nameOverride: ""
+fullnameOverride: ""
+
+## ZooKeeper Ensemble
+## ref: https://zookeeper.apache.org/doc/r3.6.2/zookeeperAdmin.html#sc_zkMulitServerSetup
+replicaCount: 3
+
+## Zookeeper Configuration
+## ref: https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_configuration
+tickTime: 2000
+initLimit: 10
+syncLimit: 5
+maxClientCnxns: 60
+autopurge:
+  purgeInterval: 24
+  snapRetainCount: 3
+quorumListenOnAllIPs: true
+maxSessionTimeout: 40000
+adminEnableServer: true
+heapOpts: "-Xms512M -Xmx512M"
+log4jRootLogLevel: INFO
+
+## Ports used by Zookeeper
+## ref: https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_configuration
+port:
+  peers: 2888
+  leader: 3888
+  admin: 8080
+  client: 2181
+
+## Data Persistence
+## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+data:
+  storageClass:
+  storageSize: 2Gi
+
+## Configure Liveness and Readiness Probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+## Configure Pod Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+podSecurityContext:
+  fsGroup: 1000
+
+## Configure Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  capabilities:
+    drop:
+    - ALL
+    # - NET_RAW
+    # - SETPCAP
+
+## Configure Resources for Containers
+## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
