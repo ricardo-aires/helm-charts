@@ -1,0 +1,12 @@
+# Default values for kstack.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+kafka:
+  enabled: true
+  zookeeper:
+    enabled: true
+
+schema-registry:
+  enabled: true
+

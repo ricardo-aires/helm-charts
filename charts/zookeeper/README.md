@@ -82,7 +82,7 @@ You can specify each parameter using the `--set key=value[,key=value]` argument 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-helm install zkp -f my-values.yaml ./zookeeper
+helm install zkp -f my-values.yaml rhcharts/zookeeper
 ```
 
 A default [values.yaml](./values.yaml) is available and should be checked for more advanced usage.

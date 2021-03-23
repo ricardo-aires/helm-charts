@@ -1,16 +1,12 @@
-# Default values for kafka.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# Default values for zookeeper.
+# Default values for schema-registry.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 ## Image Info
-## ref: https://hub.docker.com/r/confluentinc/cp-kafka
+## ref: https://hub.docker.com/r/confluentinc/cp-schema-registry
 image:
   registry: docker.io
-  repository: confluentinc/cp-kafka
+  repository: confluentinc/cp-schema-registry
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
   pullPolicy: IfNotPresent
@@ -18,53 +14,26 @@ imagePullSecrets:  []
 nameOverride: ""
 fullnameOverride: ""
 
-## Kafka Cluster
-replicaCount: 3
-maxUnavailable: 1
+## Schema Registry availability
+replicaCount: 1
 
-## Kafka Configuration
-## ref: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
-heapOpts: -Xmx1024m -Xms1024m
+## Schema Registry Configuration
+## ref: https://docs.confluent.io/platform/current/schema-registry/installation/config.html
+leaderEligibility: true
+heapOpts: -Xms1024m -Xms1024m
 confluentSupportMetricsEnable: false
-autoCreateTopicsEnable: false
-deleteTopicEnable: true
-offsetsTopicReplicationFactor: 3
-numPartitions: 3
-defaultReplicationFactor: 3
-minInsyncReplicas: 1
-uncleanLeaderElectionEnable: true
-logFlushIntervalMessages: 10000
-logFlushIntervalMs: 1000
-logRetentionBytes: 1073741824
-logRetentionCheckIntervalMs: 300000
-logRetentionHours: 168
-logSegmentBytes: 1073741824
-messageMaxBytes: 1048588
+accessControl:
+  allowMethods: GET,POST,PUT,OPTIONS
+  AllowOrigin: "*"
+schemaCompatibilityLevel: full
+port: 8081
 
-## Ports used by Kafka
-## ref: https://rmoff.net/2018/08/02/kafka-listeners-explained/
-port:
-  kafkaInternal: 9092
-  kafkaExternal: 9094
-externalAccess:
-  enabled: false
-  initNodePort: 32400
-## turn to support nodePort in docker desktop
-isDocker: true
-
-## Zookeeper Configuration
-## ref: https://docs.confluent.io/platform/current/zookeeper/deployment.html
-zookeeper:
-  ## If true, install the zookeeper chart
+## Kafka Cluster Configuration
+kafka:
+  ## If true, kafka was instaled under the same umbrella
   enabled: true
-  ## If the Zookeeper Chart is disabled a URL and port are required to connect
-  url: ""
-
-## Data Persistence
-## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
-data:
-  storageClass: 
-  storageSize: 10Gi
+  ## If outside or custom kafka a bootstrap server is required
+  bootstrapServers: PLAINTEXT://ks-kafka-headless:9092
 
 ## Configure Liveness and Readiness Probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes

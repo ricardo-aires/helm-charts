@@ -87,7 +87,7 @@ You can specify each parameter using the `--set key=value[,key=value]` argument 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-helm install zkp -f my-values.yaml ./zookeeper
+helm install kstack -f my-values.yaml rhcharts/kafka
 ```
 
 A default [values.yaml](./values.yaml) is available and should be checked for more advanced usage.
@@ -99,14 +99,14 @@ By default the [confluentinc/cp-kafka](https://hub.docker.com/r/confluentinc/cp-
 | Parameter          | Description                                   | Default                     |
 | ------------------ | --------------------------------------------- | --------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image. | `docker.io`                 |
-| `image.repository` | Docker Image of Confluent Zookeeper.          | `confluentinc/cp-zookeeper` |
-| `image.tag`        | Docker Image Tag of Confluent Zookeeper.      | `6.1.0`                     |
+| `image.repository` | Docker Image of Confluent Kafka.              | `confluentinc/cp-kafka` |
+| `image.tag`        | Docker Image Tag of Confluent Kafka.          | `6.1.0`                     |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
 ### Kafka Cluster
 
-The configuration parameters in this section control the resources requested and utilized by the zookeeper chart.
+The configuration parameters in this section control the resources requested and utilized by the kafka chart.
 
 | Parameter      | Description                  | Default |
 | -------------- | ---------------------------- | ------- |

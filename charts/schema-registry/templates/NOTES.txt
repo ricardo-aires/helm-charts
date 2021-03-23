@@ -1,0 +1,5 @@
+** Please be patient while the {{ .Chart.Name }} chart is being deployed in release {{ .Release.Name }} **
+
+This chart bootstraps a Confluent Schema Registry that can be accessed from within your cluster:
+
+    {{ include "schema-registry.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.port }}
