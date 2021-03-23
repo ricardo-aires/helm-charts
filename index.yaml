@@ -3,7 +3,7 @@ entries:
   zookeeper:
   - apiVersion: v2
     appVersion: 6.1.1
-    created: "2021-03-23T15:29:27.157825Z"
+    created: "2021-03-23T15:39:10.957404Z"
     description: A Helm chart for Confluent Zookeeper on Kubernetes
     digest: eed1fa6f2bf3602ca6401bbb6846ce5c707b51db43546fbd373f7f85f436a45c
     home: https://github.com/ricardo-aires/helm-charts/zookeeper
@@ -23,6 +23,6 @@ entries:
     - https://hub.docker.com/r/confluentinc/cp-zookeeper
     type: application
     urls:
-    - zookeeper-0.1.0.tgz
+    - https://ricardo-aires.github.io/helm-charts/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2021-03-23T15:29:27.155654Z"
+generated: "2021-03-23T15:39:10.953838Z"
