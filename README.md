@@ -60,3 +60,7 @@ Helm charts that deploy components of the [Confluent Platform](https://www.confl
 - [Kafka Connect](./charts/kafka-connect/)
 - [Kafka REST](./charts/kafka-rest/)
 - [ksqldb](./charts/ksqldb/)
+
+### Other Kafka Tools
+
+- [Kafrdop](./charts/kafdrop/)

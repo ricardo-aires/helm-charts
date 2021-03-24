@@ -37,6 +37,11 @@ dependencies:
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: ksqldb.enabled
     alias: ksqldb
+  - name: kafdrop
+    version: 0.1.0
+    repository: file://../kafdrop
+    condition: kafdrop.enabled
+    alias: kafdrop
 maintainers:
   - name: Ricardo Henriques
     email: ricardoaireshenriques@gmail.com

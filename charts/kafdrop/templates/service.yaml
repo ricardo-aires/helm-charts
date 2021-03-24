@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kafdrop.fullname" . }}
+  labels:
+    {{- include "kafdrop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - name: tcp
+    port: {{ .Values.service.port }}
+    protocol: TCP
+    targetPort: tcp
+{{ if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
+    nodePort: {{.Values.service.nodePort}}
+{{ end }}
+  selector:
+    {{- include "kafdrop.selectorLabels" . | nindent 4 }}

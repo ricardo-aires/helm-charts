@@ -12,3 +12,9 @@ schema-registry:
 
 kafka-connect:
   enabled: true
+
+ksqldb:
+  enabled: true
+
+kafdrop:
+  enabled: true
