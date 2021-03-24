@@ -7,9 +7,9 @@ keywords:
   - kafka
   - kafka-connect
   - confluent
-home: https://github.com/ricardo-aires/helm-charts/kafka-connect
+home: https://github.com/ricardo-aires/helm-charts
 sources:
-  - https://github.com/ricardo-aires
+  - https://github.com/ricardo-aires/helm-charts
   - https://docs.confluent.io/platform/current/connect/index.html
 maintainers:
   - name: Ricardo Henriques

@@ -6,9 +6,9 @@ type: application
 keywords:
   - zookeeper
   - confluent
-home: https://github.com/ricardo-aires/helm-charts/zookeeper
+home: https://github.com/ricardo-aires/helm-charts
 sources:
-  - https://github.com/ricardo-aires/helm-charts/zookeeper
+  - https://github.com/ricardo-aires/helm-charts
   - https://docs.confluent.io/platform/current/zookeeper/deployment.html
   - https://zookeeper.apache.org/doc/current/index.html
   - https://hub.docker.com/r/confluentinc/cp-zookeeper

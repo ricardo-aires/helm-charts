@@ -7,9 +7,9 @@ keywords:
   - kafka
   - schema-registry
   - confluent
-home: https://github.com/ricardo-aires/helm-charts/schema-registry
+home: https://github.com/ricardo-aires/helm-charts
 sources:
-  - https://github.com/ricardo-aires
+  - https://github.com/ricardo-aires/helm-charts
   - https://docs.confluent.io/platform/current/schema-registry/index.html
 maintainers:
   - name: Ricardo Henriques

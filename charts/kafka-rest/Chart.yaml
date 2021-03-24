@@ -7,9 +7,9 @@ keywords:
   - kafka
   - kafka-rest
   - confluent
-home: https://github.com/ricardo-aires/helm-charts/kafka-rest
+home: https://github.com/ricardo-aires/helm-charts
 sources:
-  - https://github.com/ricardo-aires/helm-charts/kafka-rest
+  - https://github.com/ricardo-aires/helm-charts
   - https://docs.confluent.io/platform/current/kafka-rest/index.html
 maintainers:
   - name: Ricardo Henriques
