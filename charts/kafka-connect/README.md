@@ -54,8 +54,6 @@ One can run the:
 - [helm status](https://helm.sh/docs/helm/helm_status/) to display the status of the named release
 - [helm test](https://helm.sh/docs/helm/helm_test/) to run tests for a release
 
-The chart uses the [compatibility](https://docs.confluent.io/platform/current/schema-registry/develop/api.html#id1) API endpoint to check availability.
-
 To [uninstall](https://helm.sh/docs/helm/helm_uninstall/) the `ktool` deployment run:
 
 ```console
@@ -71,7 +69,7 @@ You can specify each parameter using the `--set key=value[,key=value]` argument 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-helm install ktool -f my-values.yaml rhcharts/schema-registry
+helm install ktool -f my-values.yaml rhcharts/kafka-connect
 ```
 
 A default [values.yaml](./values.yaml) is available and should be checked for more advanced usage.
@@ -80,11 +78,11 @@ A default [values.yaml](./values.yaml) is available and should be checked for mo
 
 By default the [confluentinc/cp-kafka-connect](https://hub.docker.com/r/confluentinc/cp-kafka-connect) is in use.
 
-| Parameter          | Description                                    | Default                           |
-| ------------------ | ---------------------------------------------- | --------------------------------- |
-| `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                       |
+| Parameter          | Description                                    | Default                         |
+| ------------------ | ---------------------------------------------- | ------------------------------- |
+| `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                     |
 | `image.repository` | Docker Image of Confluent Kafka Connect.       | `confluentinc/cp-kafka-connect` |
-| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `6.1.0`                           |
+| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `6.1.0`                         |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -101,12 +99,12 @@ The default is to only have one replica, thus standalone, but we can change the 
 
 The next configuration related to Kafka Connect are available:
 
-| Parameter                    | Description                                                                    | Default                 |
-| ---------------------------- | ------------------------------------------------------------------------------ | ----------------------- |
-| `heapOpts`                | The JVM Heap Options for Kafka Broker. | `"-Xms1024M -Xmx1024M"` |
-| `keyConverter`            | Converter class for key Connect data. | `io.confluent.connect.avro.AvroConverter` |
-| `valueConverter`          | Converter class for value Connect data. | `io.confluent.connect.avro.AvroConverter` |
-| `storageReplicatorFactor` | The replication factor used when Kafka Connects creates internals `config`, `offset` and `status` topics| `3` |
+| Parameter                 | Description                                                                                                                                                               | Default                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `heapOpts`                | The JVM Heap Options for Kafka Connect.                                                                                                                                   | `"-Xms1024M -Xmx1024M"`                               |
+| `keyConverter`            | Converter class for key Connect data.                                                                                                                                     | `io.confluent.connect.avro.AvroConverter`             |
+| `valueConverter`          | Converter class for value Connect data.                                                                                                                                   | `io.confluent.connect.avro.AvroConverter`             |
+| `storageReplicatorFactor` | The replication factor used when Kafka Connects creates internals `config`, `offset` and `status` topics                                                                  | `3`                                                   |
 | `pluginPath`              | The comma-separated list of paths to directories that contain [Kafka Connect plugins](https://docs.confluent.io/home/connect/userguide.html#installing-kconnect-plugins). | `/usr/share/java,/usr/share/confluent-hub-components` |
 
 More information can be found in the [Confluent Documentation](https://docs.confluent.io/platform/current/connect/references/allconfigs.html).

@@ -27,6 +27,11 @@ dependencies:
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafka-connect.enabled
     alias: kafka-connect
+  - name: kafka-rest
+    version: 0.1.0
+    repository: https://ricardo-aires.github.io/helm-charts/
+    condition: kafka-rest.enabled
+    alias: kafka-rest
 maintainers:
   - name: Ricardo Henriques
     email: ricardoaireshenriques@gmail.com

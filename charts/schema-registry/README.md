@@ -92,7 +92,7 @@ The next configuration related to Kafka Schema Registry are available:
 
 | Parameter                    | Description                                                                    | Default                 |
 | ---------------------------- | ------------------------------------------------------------------------------ | ----------------------- |
-| `heapOpts`                   | The JVM Heap Options for Kafka Broker.                                         | `"-Xms1024M -Xmx1024M"` |
+| `heapOpts`                   | The JVM Heap Options for Kafka Schema Registry.                                | `"-Xms1024M -Xmx1024M"` |
 | `leaderEligibility`          | If true, this node can participate in primary election.                        | `true`                  |
 | `accessControl.allowMethods` | Set value to Jetty `Access-Control-Allow-Origin` header for specified methods. | `GET,POST,PUT,OPTIONS`  |
 | `accessControl.AllowOrigin`  | Set value for Jetty `Access-Control-Allow-Origin` header.                      | `"*"`                   |

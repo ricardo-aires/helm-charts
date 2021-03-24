@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kafka-rest.fullname" . }}
+  labels:
+    {{- include "kafka-rest.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kafka-rest.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kafka-rest.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+        {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          env:
+            - name: KAFKA_REST_HOST_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: KAFKA_REST_BOOTSTRAP_SERVERS
+              value: {{ include "kafka-rest.kafka.bootstrapServers" . | quote }}
+            - name: KAFKA_REST_SCHEMA_REGISTRY_URL
+              value: {{ include "kafka-rest.schema-registry.url" . | quote }}
+            - name: KAFKAREST_HEAP_OPTS
+              value: "{{ .Values.heapOpts }}"
+          ports:
+            - name: tcp
+              containerPort: {{ .Values.port }}
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: tcp
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: 
+              port: tcp
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+          volumeMounts:
+          - name: tmp
+            mountPath: /tmp
+          - name: config
+            mountPath: /etc/kafka-rest
+          - name: config2
+            mountPath: /etc/kafka
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: config
+        emptyDir: {}
+      - name: config2
+        emptyDir: {}
