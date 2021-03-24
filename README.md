@@ -17,7 +17,7 @@ $ helm search repo
 NAME                    	CHART VERSION	APP VERSION	DESCRIPTION
 rhcharts/kafka          	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka on Kubernetes
 rhcharts/kafka-connect  	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka Connect on Kub...
-rhcharts/kafka-rest     	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka REST on Kubernet.
+rhcharts/kafka-rest     	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka REST on Kubern...
 rhcharts/kstack         	0.1.0        	6.1.0      	A Helm chart for Confluent Platform on Kubernetes
 rhcharts/schema-registry	0.1.0        	6.1.0      	A Helm chart for Confluent Schema Registry on K...
 rhcharts/zookeeper      	0.1.0        	6.1.1      	A Helm chart for Confluent Zookeeper on Kubernetes
@@ -59,3 +59,4 @@ Helm charts that deploy components of the [Confluent Platform](https://www.confl
 - [Schema Registry](./charts/schema-registry/)
 - [Kafka Connect](./charts/kafka-connect/)
 - [Kafka REST](./charts/kafka-rest/)
+- [ksqldb](./charts/ksqldb/)

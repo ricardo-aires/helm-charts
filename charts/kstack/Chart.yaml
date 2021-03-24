@@ -32,6 +32,11 @@ dependencies:
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafka-rest.enabled
     alias: kafka-rest
+  - name: ksqldb
+    version: 0.1.0
+    repository: https://ricardo-aires.github.io/helm-charts/
+    condition: ksqldb.enabled
+    alias: ksqldb
 maintainers:
   - name: Ricardo Henriques
     email: ricardoaireshenriques@gmail.com
