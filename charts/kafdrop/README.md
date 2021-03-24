@@ -67,7 +67,7 @@ You can specify each parameter using the `--set key=value[,key=value]` argument 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-helm install ktool -f my-values.yaml rhcharts/ksqldb
+helm install ktool -f my-values.yaml rhcharts/kafdrop
 ```
 
 A default [values.yaml](./values.yaml) is available and should be checked for more advanced usage.
@@ -79,18 +79,18 @@ By default the [obsidiandynamics/kafdrop](https://hub.docker.com/r/obsidiandynam
 | Parameter          | Description                                    | Default                    |
 | ------------------ | ---------------------------------------------- | -------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                |
-| `image.repository` | Docker Image of ksqlDB.                        | `obsidiandynamics/kafdrop` |
-| `image.tag`        | Docker Image Tag of ksqlDB.                    | `3.27.0`                   |
+| `image.repository` | Docker Image of Kafdrop.                       | `obsidiandynamics/kafdrop` |
+| `image.tag`        | Docker Image Tag of Kafdrop.                   | `3.27.0`                   |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
 ### Kafdrop Configuration
 
-The next configuration related to Kafka Connect are available:
+The next configuration related to Kafdrop are available:
 
-| Parameter  | Description                                | Default               |
-| ---------- | ------------------------------------------ | --------------------- |
-| `heapOpts` | The JVM Heap Options for Kafka REST proxy. | `"-Xms32M -Xmx64M"` |
+| Parameter  | Description                       | Default             |
+| ---------- | --------------------------------- | ------------------- |
+| `heapOpts` | The JVM Heap Options for Kafdrop. | `"-Xms32M -Xmx64M"` |
 
 ### Ports used by Kafdrop
 
@@ -104,8 +104,6 @@ service:
 ```
 
 If `service.type` is change to `NodePort` the created service will be a [nodeport service](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) that will expose Kafdrop in the  `nodePort` given.
-
-| Parameter |
 
 ### Advance Configuration
 

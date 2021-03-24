@@ -15,9 +15,11 @@ To list [available charts](https://helm.sh/docs/helm/helm_search_repo/)
 ```shell
 $ helm search repo
 NAME                    	CHART VERSION	APP VERSION	DESCRIPTION
+rhcharts/kafdrop        	0.1.0        	3.27.0     	A Helm chart for Kafdrop on Kubernetes
 rhcharts/kafka          	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka on Kubernetes
 rhcharts/kafka-connect  	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka Connect on Kub...
 rhcharts/kafka-rest     	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka REST on Kubern...
+rhcharts/ksqldb         	0.1.0        	0.15.0     	A Helm chart for Confluent ksqlDB on Kubernetes
 rhcharts/kstack         	0.1.0        	6.1.0      	A Helm chart for Confluent Platform on Kubernetes
 rhcharts/schema-registry	0.1.0        	6.1.0      	A Helm chart for Confluent Schema Registry on K...
 rhcharts/zookeeper      	0.1.0        	6.1.1      	A Helm chart for Confluent Zookeeper on Kubernetes
