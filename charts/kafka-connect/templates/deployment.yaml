@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kafka-connect.fullname" . }}
+  labels:
+    {{- include "kafka-connect.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kafka-connect.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kafka-connect.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+        {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: CONNECT_REST_ADVERTISED_HOST_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CONNECT_BOOTSTRAP_SERVERS
+              value: {{ include "kafka-connect.kafka.bootstrapServers" . | quote }}
+            - name: CONNECT_GROUP_ID
+              value: "{{ include "kafka-connect.kafka.groupId" . }}-connect"
+            - name: CONNECT_CONFIG_STORAGE_TOPIC
+              value: "{{ include "kafka-connect.kafka.groupId" . }}-config"
+            - name: CONNECT_OFFSET_STORAGE_TOPIC
+              value: "{{ include "kafka-connect.kafka.groupId" . }}-offset"
+            - name: CONNECT_STATUS_STORAGE_TOPIC
+              value: "{{ include "kafka-connect.kafka.groupId" . }}-status"
+            - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+              value: {{ include "kafka-connect.schema-registry.url" . | quote }}
+            - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+              value: {{ include "kafka-connect.schema-registry.url" . | quote }}
+            - name: KAFKA_HEAP_OPTS
+              value: "{{ .Values.heapOpts }}"
+            - name: CONNECT_KEY_CONVERTER
+              value: {{ .Values.keyConverter | quote}}
+            - name: CONNECT_VALUE_CONVERTER
+              value: {{ .Values.valueConverter | quote }}
+            - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+              value: {{ .Values.storageReplicatorFactor | int | quote }}
+            - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+              value: {{ .Values.storageReplicatorFactor | int | quote }}
+            - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+              value: {{ .Values.storageReplicatorFactor | int | quote }}
+            - name: CONNECT_PLUGIN_PATH
+              value: {{ .Values.pluginPath | quote }}
+            - name: CONNECT_CONFLUENT_SUPPORT_METRICS_ENABLE
+              value: {{ .Values.confluentSupportMetricsEnable | quote }}
+          ports:
+            - name: tcp
+              containerPort: {{ .Values.port }}
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: tcp
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: 
+              port: tcp
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+          volumeMounts:
+          - name: tmp
+            mountPath: /tmp
+          - name: config
+            mountPath: /etc/kafka-connect
+          - name: config2
+            mountPath: /etc/kafka
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: config
+        emptyDir: {}
+      - name: config2
+        emptyDir: {}

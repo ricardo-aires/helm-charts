@@ -10,3 +10,5 @@ kafka:
 schema-registry:
   enabled: true
 
+kafka-connect:
+  enabled: true

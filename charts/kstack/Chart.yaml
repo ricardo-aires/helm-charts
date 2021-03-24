@@ -22,6 +22,11 @@ dependencies:
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: schema-registry.enabled
     alias: schema-registry
+  - name: kafka-connect
+    version: 0.1.0
+    repository: https://ricardo-aires.github.io/helm-charts/
+    condition: kafka-connect.enabled
+    alias: kafka-connect
 maintainers:
   - name: Ricardo Henriques
     email: ricardoaireshenriques@gmail.com
