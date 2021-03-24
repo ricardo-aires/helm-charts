@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ksqldb.fullname" . }}
+  labels:
+    {{- include "ksqldb.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ksqldb.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ksqldb.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+        {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          env:
+            - name: KSQL_KSQL_SERVICE_ID
+              value: "{{ include "ksqldb.servive.id" . }}_ksqldb_"
+            - name: KSQL_BOOTSTRAP_SERVERS
+              value: {{ include "ksqldb.kafka.bootstrapServers" . | quote }}
+            - name: KSQL_KSQL_STREAMS_BOOTSTRAP_SERVERS
+              value: {{ include "ksqldb.kafka.bootstrapServers" . | quote }}
+            - name: KSQL_KSQL_SCHEMA_REGISTRY_URL
+              value: {{ include "ksqldb.schema-registry.url" . | quote }}
+            - name: KSQL_KSQL_CONNECT_URL
+              value: {{ include "ksqldb.kafka-connect.url" . | quote }}
+            - name: KSQL_HEAP_OPTS
+              value: {{ .Values.heapOpts  | quote}}
+            - name: KSQL_LISTENERS
+              value: "http://0.0.0.0:{{ .Values.port | int }}"
+            - name: KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE
+              value: {{ .Values.loggingProcessing.streamAutoCreate | quote }}
+            - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
+              value: {{ .Values.loggingProcessing.topicAutoCreate | quote }}
+            - name: KSQL_CONFLUENT_SUPPORT_METRICS_ENABLE
+              value:  {{ .Values.confluentSupportMetricsEnable | quote }}
+          ports:
+            - name: tcp
+              containerPort: {{ .Values.port }}
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: tcp
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: 
+              port: tcp
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}

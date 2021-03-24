@@ -1,0 +1,96 @@
+# Default values for ksqlDB.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Image Info
+## ref: https://hub.docker.com/r/confluentinc/ksqldb-server
+image:
+  registry: docker.io
+  repository: confluentinc/ksqldb-server
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets:  []
+nameOverride: ""
+fullnameOverride: ""
+
+## ksqlDB
+## ref: https://docs.ksqldb.io/en/latest/operate-and-deploy/capacity-planning/#scaling-ksqldb
+replicaCount: 1
+
+## ksqlDB Configuration
+## ref: https://docs.ksqldb.io/en/latest/operate-and-deploy/installation/install-ksqldb-with-docker/
+heapOpts: -Xmx1024m -Xms1024m
+port: 8088
+loggingProcessing:
+  streamAutoCreate: true
+  topicAutoCreate: true
+confluentSupportMetricsEnable: false
+
+## Kafka Cluster Configuration
+kafka:
+  ## If true, kafka was instaled under the same umbrella
+  enabled: true
+  ## If outside or custom kafka a bootstrap server is required
+  bootstrapServers: PLAINTEXT://ks-kafka-headless:9092
+
+## Schema Registry Configuration
+schema-registry:
+  ## If true, schema-registry was instaled under the same umbrella
+  enabled: true
+  ## If outside or custom a URL and port are required to connect
+  url:
+
+## Kafka Connect Configuration
+kafka-connect:
+  ## If true, schema-registry was instaled under the same umbrella
+  enabled: true
+  ## If outside or custom a URL and port are required to connect
+  url:
+
+## Configure Liveness and Readiness Probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+## Configure Pod Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+podSecurityContext: 
+  fsGroup: 1000
+
+## Configure Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+securityContext: 
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  capabilities:
+    drop:
+    - ALL
+
+## Configure Resources for Containers
+## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
