@@ -39,7 +39,7 @@ dependencies:
     alias: ksqldb
   - name: kafdrop
     version: 0.1.0
-    repository: file://../kafdrop
+    repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafdrop.enabled
     alias: kafdrop
 maintainers:

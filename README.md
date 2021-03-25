@@ -66,3 +66,4 @@ Helm charts that deploy components of the [Confluent Platform](https://www.confl
 ### Other Kafka Tools
 
 - [Kafrdop](./charts/kafdrop/)
+- [kstack](./charts/kstack) - Umbrella Chart that can spin all the Kafka Components
