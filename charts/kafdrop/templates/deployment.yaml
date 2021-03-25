@@ -29,6 +29,8 @@ spec:
           env:
             - name: KAFKA_BROKERCONNECT
               value: {{ include "kafdrop.kafka.bootstrapServers" . | quote }}
+            - name: SCHEMAREGISTRY_CONNECT
+              value: {{ include "kafdrop.schema-registry.url" . | quote }}
             - name: JVM_OPTS
               value: {{ .Values.heapOpts  | quote}}
           ports:

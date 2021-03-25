@@ -31,6 +31,13 @@ kafka:
   ## If outside or custom kafka a bootstrap server is required
   bootstrapServers: ks-kafka-headless:9092
 
+## Schema Registry Configuration
+schema-registry:
+  ## If true, schema-registry was instaled under the same umbrella
+  enabled: true
+  ## If outside or custom a URL and port are required to connect
+  url:
+
 ## Configure Liveness and Readiness Probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
 livenessProbe:
