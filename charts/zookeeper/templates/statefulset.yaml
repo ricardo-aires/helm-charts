@@ -117,6 +117,8 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/zookeeper
+        - name: log
+          mountPath: /var/lib/zookeeper/log
         - name: config
           mountPath: /etc/kafka
         - name: logs
@@ -133,6 +135,14 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: data
+    spec:
+      storageClassName: {{ .Values.data.storageClass | quote }}
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.data.storageSize | quote }}
+  - metadata:
+      name: log
     spec:
       storageClassName: {{ .Values.data.storageClass | quote }}
       accessModes: [ "ReadWriteOnce" ]
