@@ -116,7 +116,7 @@ spec:
         {{- end }}
         volumeMounts:
         - name: data
-          mountPath: /var/lib/zookeeper
+          mountPath: /var/lib/zookeeper/data
         - name: log
           mountPath: /var/lib/zookeeper/log
         - name: config
