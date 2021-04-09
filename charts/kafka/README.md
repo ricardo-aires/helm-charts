@@ -126,8 +126,8 @@ The next configuration related to Kafka Broker are available:
 | `offsetsTopicReplicationFactor` | The replication factor for the offsets topic.                                                                                                   | `3`                     |
 | `numPartitions`                 | The default number of log partitions per topic.                                                                                                 | `3`                     |
 | `defaultReplicationFactor`      | The default replication factors for automatically created topics.                                                                               | `3`                     |
-| `minInsyncReplicas`             | The minimum number of replicas that must acknowledge a write for the write to be considered successful.                                         | `1`                     |
-| `uncleanLeaderElectionEnable`   | Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss. | `true`                  |
+| `minInsyncReplicas`             | The minimum number of replicas that must acknowledge a write for the write to be considered successful.                                         | `2`                     |
+| `uncleanLeaderElectionEnable`   | Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss. | `false`                  |
 | `logFlushIntervalMessages`      | The number of messages accumulated on a log partition before messages are flushed to disk                                                       | `10000`                 |
 | `logFlushIntervalMs`            | The maximum time in ms that a message in any topic is kept in memory before flushed to disk.                                                    | `1000`                  |
 | `logRetentionBytes`             | The maximum size of the log before deleting it.                                                                                                 | `1073741824`            |
