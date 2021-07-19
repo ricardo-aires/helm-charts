@@ -24,7 +24,7 @@ maxUnavailable: 1
 
 ## Kafka Configuration
 ## ref: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
-heapOpts: -Xmx1024m -Xms1024m
+heapOpts: -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0
 confluentSupportMetricsEnable: false
 autoCreateTopicsEnable: false
 deleteTopicEnable: true
@@ -40,6 +40,11 @@ logRetentionCheckIntervalMs: 300000
 logRetentionHours: 168
 logSegmentBytes: 1073741824
 messageMaxBytes: 1048588
+
+## Kafka Docker Logging - log4j log levels
+## ref: https://docs.confluent.io/platform/current/installation/docker/operations/logging.html#configure-docker-logging
+log4jRootLoglevel: INFO
+log4jLoggers: "kafka.authorizer.logger=INFO,kafka.controller=INFO"
 
 ## Ports used by Kafka
 ## ref: https://rmoff.net/2018/08/02/kafka-listeners-explained/
@@ -101,14 +106,10 @@ securityContext:
 
 ## Configure Resources for Containers
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources: 
+  limits:
+    cpu: 1
+    memory: 1400Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi

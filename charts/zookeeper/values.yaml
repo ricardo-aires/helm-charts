@@ -30,7 +30,7 @@ autopurge:
 quorumListenOnAllIPs: true
 maxSessionTimeout: 40000
 adminEnableServer: true
-heapOpts: "-Xms512M -Xmx512M"
+heapOpts: "-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
 log4jRootLogLevel: INFO
 
 ## Ports used by Zookeeper
@@ -80,19 +80,13 @@ securityContext:
   capabilities:
     drop:
     - ALL
-    # - NET_RAW
-    # - SETPCAP
 
 ## Configure Resources for Containers
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  limits:
+    cpu: 200m
+    memory: 650Mi
+  requests:
+    cpu: 100m
+    memory: 320Mi

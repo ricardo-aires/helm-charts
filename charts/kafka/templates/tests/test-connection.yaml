@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "kafka.fullname" . }}-test"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  containers:
+  - name: test-topic
+    image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+    imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+    command:
+    - sh
+    - -c
+    - |
+      set -ex
+      # Delete the topic if it exists
+      kafka-topics --bootstrap-server ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME} --delete --if-exists
+      # Create the topic
+      kafka-topics --bootstrap-server ${BOOTSTRAP_SERVER} --create --topic ${TOPIC_NAME} --partitions {{ .Values.replicaCount }} --replication-factor 1 --if-not-exists || exit 1
+      # Create a message
+      MESSAGE="`date -u`" || exit 1
+      # Produce a test message to the topic
+      (echo "$MESSAGE" | kafka-console-producer --broker-list ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME}) || exit 1
+      # Consume a test message from the topic
+      kafka-console-consumer --bootstrap-server ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME} --from-beginning --timeout-ms 10000 --max-messages 1 | grep "$MESSAGE"
+    env:
+    - name: TOPIC_NAME
+      value: {{ include "kafka.fullname" . }}-test-topic
+    - name: BOOTSTRAP_SERVER
+      value: {{ include "kafka.fullname" . }}-headless:{{ .Values.port.kafkaInternal }}
+  restartPolicy: Never

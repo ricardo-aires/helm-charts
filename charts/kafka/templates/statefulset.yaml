@@ -101,6 +101,10 @@ spec:
           value: {{ .Values.logSegmentBytes | int | quote }}
         - name: KAFKA_MESSAGE_MAX_BYTES
           value: {{ .Values.messageMaxBytes | int | quote }}
+        - name: KAFKA_LOG4J_ROOT_LOGLEVEL
+          value: {{ .Values.log4jRootLoglevel | quote }}
+        - name: KAFKA_LOG4J_LOGGERS
+          value: {{ .Values.log4jLoggers | quote }}
         - name: KAFKA_LISTENERS
           value: "PLAINTEXT://:{{ .Values.port.kafkaInternal }},EXTERNAL://:{{ .Values.port.kafkaExternal }}"
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP

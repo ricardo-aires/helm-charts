@@ -20,12 +20,17 @@ replicaCount: 1
 
 ## ksqlDB Configuration
 ## ref: https://docs.ksqldb.io/en/latest/operate-and-deploy/installation/install-ksqldb-with-docker/
-heapOpts: -Xmx1024m -Xms1024m
+heapOpts: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=50.0
 port: 8088
 loggingProcessing:
   streamAutoCreate: true
   topicAutoCreate: true
 confluentSupportMetricsEnable: false
+
+## ksqlDB Headless mode deployment
+## When a queries file is specified, ksqlDB will be deployed in headless mode
+## ref: https://docs.ksqldb.io/en/latest/operate-and-deploy/installation/server-config/#start-headless-ksqldb-server-by-using-the-configuration-file
+queriesFileCM:
 
 ## Kafka Cluster Configuration
 kafka:
@@ -83,14 +88,10 @@ securityContext:
 
 ## Configure Resources for Containers
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  limits:
+    cpu: 1
+    memory: 1400Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi

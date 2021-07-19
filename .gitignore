@@ -8,3 +8,5 @@ charts/*/charts
 charts/*/Chart.lock
 # Cache objects
 **.vagrant/
+# Test values
+_*.yaml

@@ -10,12 +10,12 @@ Kafka Connect is an open source framework, part of Apache Kafka, to stream data 
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.1.0
-  - [Kubernetes](https://kubernetes.io) v1.19.3
-- [Helm](https://helm.sh) v3.5.2
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.1.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.8
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.7
+- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
+  - [Kubernetes](https://kubernetes.io) v1.21.2
+- [Helm](https://helm.sh) v3.6.3
+- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
+  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
+  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
 
 ## Installing the Chart
 
@@ -82,7 +82,7 @@ By default the [confluentinc/cp-kafka-connect](https://hub.docker.com/r/confluen
 | ------------------ | ---------------------------------------------- | ------------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                     |
 | `image.repository` | Docker Image of Confluent Kafka Connect.       | `confluentinc/cp-kafka-connect` |
-| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `6.1.0`                         |
+| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `6.2.0`                         |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -101,7 +101,6 @@ The next configuration related to Kafka Connect are available:
 
 | Parameter                 | Description                                                                                                                                                               | Default                                               |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `heapOpts`                | The JVM Heap Options for Kafka Connect.                                                                                                                                   | `"-Xms1024M -Xmx1024M"`                               |
 | `keyConverter`            | Converter class for key Connect data.                                                                                                                                     | `io.confluent.connect.avro.AvroConverter`             |
 | `valueConverter`          | Converter class for value Connect data.                                                                                                                                   | `io.confluent.connect.avro.AvroConverter`             |
 | `storageReplicatorFactor` | The replication factor used when Kafka Connects creates internals `config`, `offset` and `status` topics                                                                  | `3`                                                   |
@@ -113,6 +112,23 @@ More information can be found in the [Confluent Documentation](https://docs.conf
 
 By default the [Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) will expose the pods in the port `8083`, `port`.
 
+### Resources for Containers
+
+Regarding the management of [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) the next defaults regarding requests and limits are set:
+
+| Parameter                   | Description                                                             | Default  |
+| --------------------------- | ----------------------------------------------------------------------- | -------- |
+| `resources.limits.cpu`      | a container cannot use more CPU than the configured limit               | `1`      |
+| `resources.limits.memory`   | a container cannot use more Memory than the configured limit            | `1400Mi` |
+| `resources.requests.cpu`    | a container is guaranteed to be allocated as much CPU as it requests    | `250m`   |
+| `resources.requests.memory` | a container is guaranteed to be allocated as much Memory as it requests | `512Mi`  |
+
+In terms of the JVM the next default is set:
+
+| Parameter  | Description                            | Default                                                     |
+| ---------- | -------------------------------------- | ----------------------------------------------------------- |
+| `heapOpts` | The JVM Heap Options for Kafka Broker. | `"-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"` |
+
 ### Advance Configuration
 
 Check the `values.yaml` for more advance configuration such as:
@@ -120,4 +136,3 @@ Check the `values.yaml` for more advance configuration such as:
 - [Liveness and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)
 - [Pod Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 - [Container Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-- [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)

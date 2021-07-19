@@ -14,12 +14,12 @@ This chart bootstraps a [Kafka Cluster](https://kafka.apache.org) using the [Con
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.1.0
-  - [Kubernetes](https://kubernetes.io) v1.19.3
-- [Helm](https://helm.sh) v3.5.2
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.1.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.8
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.7
+- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
+  - [Kubernetes](https://kubernetes.io) v1.21.2
+- [Helm](https://helm.sh) v3.6.3
+- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
+  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
+  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
 
 ## Installing the Chart
 
@@ -34,7 +34,7 @@ To [install](https://helm.sh/docs/helm/helm_install/) the chart with the release
 ```console
 helm install kstack rhcharts/kafka
 NAME: kstack
-LAST DEPLOYED: Tue Mar 23 17:16:55 2021
+LAST DEPLOYED: Mon Jul 19 14:52:17 2021
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
@@ -100,7 +100,7 @@ By default the [confluentinc/cp-kafka](https://hub.docker.com/r/confluentinc/cp-
 | ------------------ | --------------------------------------------- | --------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image. | `docker.io`                 |
 | `image.repository` | Docker Image of Confluent Kafka.              | `confluentinc/cp-kafka` |
-| `image.tag`        | Docker Image Tag of Confluent Kafka.          | `6.1.0`                     |
+| `image.tag`        | Docker Image Tag of Confluent Kafka.          | `6.2.0`                     |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -118,23 +118,22 @@ The configuration parameters in this section control the resources requested and
 
 The next configuration related to Kafka Broker are available:
 
-| Parameter                       | Description                                                                                                                                     | Default                 |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `heapOpts`                      | The JVM Heap Options for Kafka Broker.                                                                                                          | `"-Xms1024M -Xmx1024M"` |
-| `autoCreateTopicsEnable`        | Enable auto creation of topic on the server.                                                                                                    | `false`                 |
-| `deleteTopicEnable`             | Delete topic through the admin tool will have no effect if this config is turned off.                                                           | `true`                  |
-| `offsetsTopicReplicationFactor` | The replication factor for the offsets topic.                                                                                                   | `3`                     |
-| `numPartitions`                 | The default number of log partitions per topic.                                                                                                 | `3`                     |
-| `defaultReplicationFactor`      | The default replication factors for automatically created topics.                                                                               | `3`                     |
-| `minInsyncReplicas`             | The minimum number of replicas that must acknowledge a write for the write to be considered successful.                                         | `2`                     |
-| `uncleanLeaderElectionEnable`   | Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss. | `false`                  |
-| `logFlushIntervalMessages`      | The number of messages accumulated on a log partition before messages are flushed to disk                                                       | `10000`                 |
-| `logFlushIntervalMs`            | The maximum time in ms that a message in any topic is kept in memory before flushed to disk.                                                    | `1000`                  |
-| `logRetentionBytes`             | The maximum size of the log before deleting it.                                                                                                 | `1073741824`            |
-| `logRetentionCheckIntervalMs`   | The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion.                                             | `300000`                |
-| `logRetentionHours`             | The number of hours to eep a log file before deleting it (in hours).                                                                            | `168`                   |
-| `logSegmentBytes`               | The maximum size of a single log file.                                                                                                          | `1073741824`            |
-| `messageMaxBytes`               | The largest record batch size allowed by Kafka (after compression if compression is enabled).                                                   | `1048588`               |
+| Parameter                       | Description                                                                                                                                     | Default      |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `autoCreateTopicsEnable`        | Enable auto creation of topic on the server.                                                                                                    | `false`      |
+| `deleteTopicEnable`             | Delete topic through the admin tool will have no effect if this config is turned off.                                                           | `true`       |
+| `offsetsTopicReplicationFactor` | The replication factor for the offsets topic.                                                                                                   | `3`          |
+| `numPartitions`                 | The default number of log partitions per topic.                                                                                                 | `3`          |
+| `defaultReplicationFactor`      | The default replication factors for automatically created topics.                                                                               | `3`          |
+| `minInsyncReplicas`             | The minimum number of replicas that must acknowledge a write for the write to be considered successful.                                         | `2`          |
+| `uncleanLeaderElectionEnable`   | Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss. | `false`      |
+| `logFlushIntervalMessages`      | The number of messages accumulated on a log partition before messages are flushed to disk                                                       | `10000`      |
+| `logFlushIntervalMs`            | The maximum time in ms that a message in any topic is kept in memory before flushed to disk.                                                    | `1000`       |
+| `logRetentionBytes`             | The maximum size of the log before deleting it.                                                                                                 | `1073741824` |
+| `logRetentionCheckIntervalMs`   | The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion.                                             | `300000`     |
+| `logRetentionHours`             | The number of hours to eep a log file before deleting it (in hours).                                                                            | `168`        |
+| `logSegmentBytes`               | The maximum size of a single log file.                                                                                                          | `1073741824` |
+| `messageMaxBytes`               | The largest record batch size allowed by Kafka (after compression if compression is enabled).                                                   | `1048588`    |
 
 More information can be found in the [Apache Kafka Documentation](https://kafka.apache.org/documentation/#brokerconfigs) and in the [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html).
 
@@ -173,6 +172,23 @@ The Kafka Kafka Data directory can be tweaked with:
 
 This will allow the creation of a [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) using a specific [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/). However, [Access Mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes).
 
+### Resources for Containers
+
+Regarding the management of [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) the next defaults regarding requests and limits are set:
+
+| Parameter                   | Description                                                             | Default  |
+| --------------------------- | ----------------------------------------------------------------------- | -------- |
+| `resources.limits.cpu`      | a container cannot use more CPU than the configured limit               | `1`      |
+| `resources.limits.memory`   | a container cannot use more Memory than the configured limit            | `1400Mi` |
+| `resources.requests.cpu`    | a container is guaranteed to be allocated as much CPU as it requests    | `250m`   |
+| `resources.requests.memory` | a container is guaranteed to be allocated as much Memory as it requests | `512Mi`  |
+
+In terms of the JVM the next default is set:
+
+| Parameter  | Description                            | Default                                                     |
+| ---------- | -------------------------------------- | ----------------------------------------------------------- |
+| `heapOpts` | The JVM Heap Options for Kafka Broker. | `"-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"` |
+
 ### Advance Configuration
 
 Check the `values.yaml` for more advance configuration such as:
@@ -180,4 +196,3 @@ Check the `values.yaml` for more advance configuration such as:
 - [Liveness and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)
 - [Pod Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 - [Container Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-- [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)

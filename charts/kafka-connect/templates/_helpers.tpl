@@ -88,7 +88,7 @@ else use user-provided URL
 {{- define "kafka-connect.schema-registry.url" -}}
 {{- if (index .Values "schema-registry" "enabled") -}}
 {{- $clientPort := 8081 | int -}}
-{{- printf "%s:%d" (include "kafka-connect.schema-registry.fullname" .) $clientPort }}
+{{- printf "http://%s:%d" (include "kafka-connect.schema-registry.fullname" .) $clientPort }}
 {{- else -}}
 {{- printf "%s" (index .Values "schema-registry" "url") }}
 {{- end -}}

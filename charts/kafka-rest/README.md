@@ -10,12 +10,12 @@ The Confluent REST Proxy provides a RESTful interface to a Kafka cluster.
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.1.0
-  - [Kubernetes](https://kubernetes.io) v1.19.3
-- [Helm](https://helm.sh) v3.5.2
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.1.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.8
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.7
+- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
+  - [Kubernetes](https://kubernetes.io) v1.21.2
+- [Helm](https://helm.sh) v3.6.3
+- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
+  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
+  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
 
 ## Installing the Chart
 
@@ -80,21 +80,30 @@ By default the [confluentinc/cp-kafka-rest](https://hub.docker.com/r/confluentin
 | ------------------ | ---------------------------------------------- | ---------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                  |
 | `image.repository` | Docker Image of Confluent Kafka Connect.       | `confluentinc/cp-kafka-rest` |
-| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `6.1.0`                      |
+| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `6.2.0`                      |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
-
-### Confluent Kafka REST Configuration
-
-The next configuration related to Kafka Connect are available:
-
-| Parameter  | Description                                | Default               |
-| ---------- | ------------------------------------------ | --------------------- |
-| `heapOpts` | The JVM Heap Options for Kafka REST proxy. | `"-Xms512M -Xmx512M"` |
 
 ### Ports used by Schema Registry
 
 By default the [Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) will expose the pods in the port `8082`, `port`.
+
+### Resources for Containers
+
+Regarding the management of [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) the next defaults regarding requests and limits are set:
+
+| Parameter                   | Description                                                             | Default  |
+| --------------------------- | ----------------------------------------------------------------------- | -------- |
+| `resources.limits.cpu`      | a container cannot use more CPU than the configured limit               | `200m`   |
+| `resources.limits.memory`   | a container cannot use more Memory than the configured limit            | `660Mi`  |
+| `resources.requests.cpu`    | a container is guaranteed to be allocated as much CPU as it requests    | `100m`   |
+| `resources.requests.memory` | a container is guaranteed to be allocated as much Memory as it requests | `200Mi`  |
+
+In terms of the JVM the next default is set:
+
+| Parameter  | Description                            | Default                                                     |
+| ---------- | -------------------------------------- | ----------------------------------------------------------- |
+| `heapOpts` | The JVM Heap Options for Kafka Rest.   | `"-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"` |
 
 ### Advance Configuration
 
@@ -103,4 +112,3 @@ Check the `values.yaml` for more advance configuration such as:
 - [Liveness and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)
 - [Pod Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 - [Container Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-- [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)

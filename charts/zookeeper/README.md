@@ -10,11 +10,11 @@ This chart bootstraps an ensemble [Apache Zookeeper](https://zookeeper.apache.or
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.1.0
-  - [Kubernetes](https://kubernetes.io) v1.19.3
-- [Helm](https://helm.sh) v3.5.2
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.1.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.8
+- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
+  - [Kubernetes](https://kubernetes.io) v1.21.2
+- [Helm](https://helm.sh) v3.6.3
+- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
+  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
 
 ## Installing the Chart
 
@@ -27,9 +27,9 @@ helm repo add rhcharts https://ricardo-aires.github.io/helm-charts/
 To [install](https://helm.sh/docs/helm/helm_install/) the chart with the release name `zkp`:
 
 ```console
-helm install zkp rhcharts/zookeeper
+$ helm install zkp rhcharts/zookeeper
 NAME: zkp
-LAST DEPLOYED: Tue Mar 23 14:50:47 2021
+LAST DEPLOYED: Mon Jul 19 11:49:48 2021
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
@@ -43,6 +43,9 @@ This chart bootstraps an ensemble Apache Zookeeper Servers made of "3" servers u
 To connect to your ZooKeeper server run the following commands:
 
     $ kubectl exec -it -n default zkp-zookeeper-0 -- zookeeper-shell zkp-zookeeper-headless.default:2181
+
+More info:
+https://ricardo-aires.github.io/helm-charts/charts/zookeeper/
 
 $
 ```
@@ -95,7 +98,7 @@ By default the [confluentinc/cp-zookeeper](https://hub.docker.com/r/confluentinc
 | ------------------ | --------------------------------------------- | --------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image. | `docker.io`                 |
 | `image.repository` | Docker Image of Confluent Zookeeper.          | `confluentinc/cp-zookeeper` |
-| `image.tag`        | Docker Image Tag of Confluent Zookeeper.      | `6.1.0`                     |
+| `image.tag`        | Docker Image Tag of Confluent Zookeeper.      | `6.2.0`                     |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -126,7 +129,6 @@ The next configuration related to Zookeeper are available:
 | `quorumListenOnAllIPs`      | When set to true the ZooKeeper server will listen for connections from its peers on all available IP addresses          | `true`                |
 | `maxSessionTimeout`         | The maximum session timeout in milliseconds that the server will allow the client to negotiate.                         | `40000`               |
 | `adminEnableServer`         | Flag for the [AdminServer](https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_adminserver)                 | `true`                |
-| `heapOpts`                  | The JVM Heap Options for Zookeeper Server.                                                                              | `"-Xms512M -Xmx512M"` |
 | `log4jRootLogLevel`         | Log level of ZooKeeper server                                                                                           |  `INFO`               |
 
 More information can be found in the [Apache Zookeeper Documentation](https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_configuration) and in the [Confluent Documentation](https://docs.confluent.io/platform/current/zookeeper/deployment.html).
@@ -154,6 +156,23 @@ The ZooKeeper server continually saves `znode` snapshot files and, optionally, t
 
 This will allow the creation of a [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) using a specific [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/). However, [Access Mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes).
 
+### Resources for Containers
+
+Regarding the management of [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) the next defaults regarding resources and limits are set:
+
+| Parameter                   | Description                                                             | Default |
+| --------------------------- | ----------------------------------------------------------------------- | ------- |
+| `resources.limits.cpu`      | a container cannot use more CPU than the configured limit               | `200m`  |
+| `resources.limits.memory`   | a container cannot use more Memory than the configured limit            | `650Mi` |
+| `resources.requests.cpu`    | a container is guaranteed to be allocated as much CPU as it requests    | `100m`   |
+| `resources.requests.memory` | a container is guaranteed to be allocated as much Memory as it requests | `320Mi` |
+
+In terms of the JVM the next default is set:
+
+| Parameter  | Description                                | Default                                                     |
+| ---------- | ------------------------------------------ | ----------------------------------------------------------- |
+| `heapOpts` | The JVM Heap Options for Zookeeper Server. | `"-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"` |
+
 ### Advance Configuration
 
 Check the `values.yaml` for more advance configuration such as:
@@ -161,4 +180,3 @@ Check the `values.yaml` for more advance configuration such as:
 - [Liveness and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)
 - [Pod Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 - [Container Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-- [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
