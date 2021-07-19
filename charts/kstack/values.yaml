@@ -14,7 +14,10 @@ kafka-connect:
   enabled: true
 
 ksqldb:
-  enabled: true
+  enabled: false
 
 kafdrop:
-  enabled: true
+  enabled: false
+
+kafka-rest:
+  enabled: false

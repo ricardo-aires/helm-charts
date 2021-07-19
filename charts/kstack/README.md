@@ -23,12 +23,12 @@ Helm charts that deploy components of the [Confluent Platform](https://www.confl
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.1.0
-  - [Kubernetes](https://kubernetes.io) v1.19.3
-- [Helm](https://helm.sh) v3.5.2
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.1.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.8
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.7
+- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
+  - [Kubernetes](https://kubernetes.io) v1.21.2
+- [Helm](https://helm.sh) v3.6.3
+- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
+  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
+  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
 
 ## Installing the Chart
 
