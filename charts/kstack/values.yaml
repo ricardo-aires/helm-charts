@@ -15,7 +15,7 @@ kafka-connect:
   enabled: true
 
 kafka-connect-ui:
-  enabled: true
+  enabled: false
 
 ksqldb:
   enabled: false
