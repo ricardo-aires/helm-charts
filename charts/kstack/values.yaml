@@ -8,7 +8,13 @@ kafka:
 schema-registry:
   enabled: true
 
+schema-registry-ui:
+  enabled: false
+
 kafka-connect:
+  enabled: true
+
+kafka-connect-ui:
   enabled: true
 
 ksqldb:
