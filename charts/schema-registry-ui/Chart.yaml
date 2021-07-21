@@ -1,0 +1,20 @@
+apiVersion: v2
+name: schema-registry-ui
+version: 0.1.0
+description: A Helm chart for Landoop Schema Registry UI on Kubernetes
+type: application
+keywords:
+  - kafka
+  - schema-registry
+  - landoop
+home: https://github.com/ricardo-aires/helm-charts
+sources:
+  - https://github.com/ricardo-aires/helm-charts
+  - https://hub.docker.com/r/landoop/schema-registry-ui
+  - https://github.com/lensesio/schema-registry-ui
+maintainers:
+  - name: Ricardo Henriques
+    email: ricardoaireshenriques@gmail.com
+    url: https://github.com/ricardo-aires
+icon: https://assets.confluent.io/m/61d0fe7faad2f991/original/icon-schema-registry.svg
+appVersion: latest

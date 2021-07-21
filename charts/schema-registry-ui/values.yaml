@@ -1,0 +1,71 @@
+# Default values for schema-registry-ui.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Image Info
+## ref: https://hub.docker.com/r/landoop/schema-registry-ui
+image:
+  registry: docker.io
+  repository: landoop/schema-registry-ui
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets:  []
+nameOverride: ""
+fullnameOverride: ""
+
+## Schema Registry UI Configuration
+## ref: https://github.com/lensesio/schema-registry-ui
+schemaRegistryURL:
+allow:
+ global: false
+ transitive: false
+ deletion: false
+readOnly: false
+service:
+  type: NodePort
+  port: 8000
+  nodePort: 30800
+
+## Configure Liveness and Readiness Probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+## Configure Pod Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+podSecurityContext:
+  fsGroup: 1000
+
+## Configure Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  capabilities:
+    drop:
+    - ALL
+
+## Configure Resources for Containers
+## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+resources:
+  limits:
+    cpu: 100m
+    memory: 1000Mi
+  requests:
+    cpu: 10m
+    memory: 220Mi
