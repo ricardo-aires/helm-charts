@@ -32,6 +32,11 @@ dependencies:
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafka-connect.enabled
     alias: kafka-connect
+  - name: kafka-connect-ui
+    version: 0.1.0
+    repository: https://ricardo-aires.github.io/helm-charts/
+    condition: kafka-connect-ui.enabled
+    alias: kafka-connect-ui
   - name: kafka-rest
     version: 0.1.0
     repository: https://ricardo-aires.github.io/helm-charts/
