@@ -3,9 +3,9 @@ entries:
   kafdrop:
   - apiVersion: v2
     appVersion: 3.27.0
-    created: "2021-07-19T16:05:27.032749+01:00"
+    created: "2021-07-21T16:54:02.109338+01:00"
     description: A Helm chart for Kafdrop on Kubernetes
-    digest: 6c8817da6e3f52a2d34dfdec20580ee9e177a58ba4144ddbcb1233284f453b63
+    digest: a3e3ee4cdcdb32223e872c26c5d130c4753652064a57d0b76608332a29e19b27
     home: https://github.com/ricardo-aires/helm-charts
     icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
     keywords:
@@ -26,7 +26,7 @@ entries:
   kafka:
   - apiVersion: v2
     appVersion: 6.2.0
-    created: "2021-07-19T16:05:27.036429+01:00"
+    created: "2021-07-21T16:54:02.112641+01:00"
     dependencies:
     - alias: zookeeper
       condition: zookeeper.enabled
@@ -34,7 +34,7 @@ entries:
       repository: https://ricardo-aires.github.io/helm-charts/
       version: 0.1.0
     description: A Helm chart for Confluent Kafka on Kubernetes
-    digest: a1593d4154faf1779802550583fe3f130e9e526d06edad4d98c1d5e9cec67f4a
+    digest: 31aa8f789a1bc284f8795a6004d1226074b278cd127d1e8cce894b1a71695865
     home: https://github.com/ricardo-aires/helm-charts
     icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
     keywords:
@@ -56,9 +56,9 @@ entries:
   kafka-connect:
   - apiVersion: v2
     appVersion: 6.2.0
-    created: "2021-07-19T16:05:27.037457+01:00"
+    created: "2021-07-21T16:54:02.113725+01:00"
     description: A Helm chart for Confluent Kafka Connect on Kubernetes
-    digest: d9120175bcb6a751619e79ebd32cc44655f091b89c9cdca7030604955b9092b7
+    digest: 002246d28970b8af4c20d8e63958fd004206ce892c7907667329d8b794f97c38
     home: https://github.com/ricardo-aires/helm-charts
     icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
     keywords:
@@ -77,12 +77,37 @@ entries:
     urls:
     - https://ricardo-aires.github.io/helm-charts/kafka-connect-0.1.0.tgz
     version: 0.1.0
+  kafka-connect-ui:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2021-07-21T16:54:02.114306+01:00"
+    description: A Helm chart for Landoop Kafka Connect UI on Kubernetes
+    digest: f13dc072493f62344324a83422e16060c4ff1e4d9785dca829bc0fb0d246c859
+    home: https://github.com/ricardo-aires/helm-charts
+    icon: https://assets.confluent.io/m/61d0fe7faad2f991/original/icon-schema-registry.svg
+    keywords:
+    - kafka
+    - kafka-connect
+    - landoop
+    maintainers:
+    - email: ricardoaireshenriques@gmail.com
+      name: Ricardo Henriques
+      url: https://github.com/ricardo-aires
+    name: kafka-connect-ui
+    sources:
+    - https://github.com/ricardo-aires/helm-charts
+    - https://hub.docker.com/r/landoop/kafka-connect-ui
+    - https://github.com/lensesio/kafka-connect-ui
+    type: application
+    urls:
+    - https://ricardo-aires.github.io/helm-charts/kafka-connect-ui-0.1.0.tgz
+    version: 0.1.0
   kafka-rest:
   - apiVersion: v2
     appVersion: 6.2.0
-    created: "2021-07-19T16:05:27.038182+01:00"
+    created: "2021-07-21T16:54:02.114923+01:00"
     description: A Helm chart for Confluent Kafka REST on Kubernetes
-    digest: b359b3ed8c2af7b3325954eea2781496704cc95470c83f9938797e61de2f7570
+    digest: e48e90c4135dca56aaa583dcdb2ed196bc8aefe39817fd39d4a723f3f1c9378c
     home: https://github.com/ricardo-aires/helm-charts
     icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
     keywords:
@@ -104,9 +129,9 @@ entries:
   ksqldb:
   - apiVersion: v2
     appVersion: 0.18.0
-    created: "2021-07-19T16:05:27.03909+01:00"
+    created: "2021-07-21T16:54:02.116144+01:00"
     description: A Helm chart for Confluent ksqlDB on Kubernetes
-    digest: 79e5bb89adee30f0d615747a95ff44ec18983e4b81ee976fad01d0d75e8e0d64
+    digest: c0c8806b457f495807763ebb341eb691ac5c96c9ef350a13a942c147db89a8b7
     home: https://github.com/ricardo-aires/helm-charts
     icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
     keywords:
@@ -129,7 +154,7 @@ entries:
   kstack:
   - apiVersion: v2
     appVersion: 6.2.0
-    created: "2021-07-19T16:05:27.047067+01:00"
+    created: "2021-07-21T16:54:02.125133+01:00"
     dependencies:
     - alias: kafka
       condition: kafka.enabled
@@ -139,6 +164,11 @@ entries:
     - alias: schema-registry
       condition: schema-registry.enabled
       name: schema-registry
+      repository: https://ricardo-aires.github.io/helm-charts/
+      version: 0.1.0
+    - alias: schema-registry-ui
+      condition: schema-registry-ui.enabled
+      name: schema-registry-ui
       repository: https://ricardo-aires.github.io/helm-charts/
       version: 0.1.0
     - alias: kafka-connect
@@ -162,7 +192,7 @@ entries:
       repository: https://ricardo-aires.github.io/helm-charts/
       version: 0.1.0
     description: A Helm chart for Confluent Platform on Kubernetes
-    digest: 1d5efc181e2cd70eb9d9efd7ab8b74c53822deeed127e1763c48b2365d8ff638
+    digest: c70498f7359ecc2f739aed1e80f17370fd3bac5957c3d6e52ac4688bd3177976
     home: https://ricardo-aires.github.io/helm-charts/
     icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
     keywords:
@@ -184,9 +214,9 @@ entries:
   schema-registry:
   - apiVersion: v2
     appVersion: 6.2.0
-    created: "2021-07-19T16:05:27.047714+01:00"
+    created: "2021-07-21T16:54:02.126566+01:00"
     description: A Helm chart for Confluent Schema Registry on Kubernetes
-    digest: 1d9239482b986bae35ab86b72b887eb44e55934dc6bc28658ff505b0b11a5dab
+    digest: 3ed38b6013a44d8d548623f007aa06074f482cdb92315b874fb53085b3f6f8ac
     home: https://github.com/ricardo-aires/helm-charts
     icon: https://assets.confluent.io/m/61d0fe7faad2f991/original/icon-schema-registry.svg
     keywords:
@@ -205,12 +235,37 @@ entries:
     urls:
     - https://ricardo-aires.github.io/helm-charts/schema-registry-0.1.0.tgz
     version: 0.1.0
+  schema-registry-ui:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2021-07-21T16:54:02.127163+01:00"
+    description: A Helm chart for Landoop Schema Registry UI on Kubernetes
+    digest: f481114d7e60fb7d50edfb7650d580fbba598cc252e808a0d2f379e3902f4250
+    home: https://github.com/ricardo-aires/helm-charts
+    icon: https://assets.confluent.io/m/61d0fe7faad2f991/original/icon-schema-registry.svg
+    keywords:
+    - kafka
+    - schema-registry
+    - landoop
+    maintainers:
+    - email: ricardoaireshenriques@gmail.com
+      name: Ricardo Henriques
+      url: https://github.com/ricardo-aires
+    name: schema-registry-ui
+    sources:
+    - https://github.com/ricardo-aires/helm-charts
+    - https://hub.docker.com/r/landoop/schema-registry-ui
+    - https://github.com/lensesio/schema-registry-ui
+    type: application
+    urls:
+    - https://ricardo-aires.github.io/helm-charts/schema-registry-ui-0.1.0.tgz
+    version: 0.1.0
   zookeeper:
   - apiVersion: v2
     appVersion: 6.2.0
-    created: "2021-07-19T16:05:27.049089+01:00"
+    created: "2021-07-21T16:54:02.128583+01:00"
     description: A Helm chart for Confluent Zookeeper on Kubernetes
-    digest: a41b90cb6478c812640c6f4923634edff643382b2e99e20ed572d2e95fa81e28
+    digest: 4a5a5ca9acd0c1af79b0b3bb98d20c2af2c9c5739c3ce2ec03b841577b73f2ff
     home: https://github.com/ricardo-aires/helm-charts
     icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/zookeeper.svg
     keywords:
@@ -230,4 +285,4 @@ entries:
     urls:
     - https://ricardo-aires.github.io/helm-charts/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2021-07-19T16:05:27.031432+01:00"
+generated: "2021-07-21T16:54:02.107451+01:00"

@@ -60,3 +60,25 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create a default fully qualified kafka connect name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "ui.kafka-connect.fullname" -}}
+{{- $name := default "kafka-connect" (index .Values "kafka-connect" "nameOverride") -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Form the kafka connect URL. If kafka connect is installed as part of this chart, use k8s service discovery,
+else use user-provided URL
+*/}}
+{{- define "ui.kafka-connect.url" -}}
+{{- if (index .Values "kafka-connect" "enabled") -}}
+{{- $clientPort := 8083 | int -}}
+{{- printf "%s:%d" (include "ui.kafka-connect.fullname" .) $clientPort }}
+{{- else -}}
+{{- printf "%s" (index .Values "kafka-connect" "url") }}
+{{- end -}}
+{{- end -}}

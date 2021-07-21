@@ -20,6 +20,8 @@ Helm charts that deploy components of the [Confluent Platform](https://www.confl
 ### Other Kafka Tools
 
 - [Kafrdop](../kafdrop/)
+- [Schema Registry UI](../schema-registry-ui)
+- [kafka Connect UI](../kafka-connect-ui)
 
 ## Developing Environment
 

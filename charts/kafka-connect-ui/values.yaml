@@ -16,7 +16,9 @@ fullnameOverride: ""
 
 ## Kafka Connect UI Configuration
 ## ref: https://github.com/lensesio/kafka-connect-ui
-kafkaConnectURL:
+kafka-connect:
+  enabled: true
+  url:
 service:
   type: NodePort
   port: 8000

@@ -16,7 +16,12 @@ fullnameOverride: ""
 
 ## Schema Registry UI Configuration
 ## ref: https://github.com/lensesio/schema-registry-ui
-schemaRegistryURL:
+## Schema Registry Configuration
+schema-registry:
+  ## If true, schema-registry was installed under the same umbrella
+  enabled: true
+  ## If outside or custom a URL and port are required to connect
+  url:
 allow:
  global: false
  transitive: false

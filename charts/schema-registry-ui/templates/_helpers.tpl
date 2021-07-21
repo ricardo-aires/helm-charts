@@ -51,12 +51,23 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
+Create a default fully qualified schema registry name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "schema-registry-ui.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "schema-registry-ui.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
+{{- define "ui.schema-registry.fullname" -}}
+{{- $name := default "schema-registry" (index .Values "schema-registry" "nameOverride") -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Form the schema registry URL. If schema registry is installed as part of this chart, use k8s service discovery,
+else use user-provided URL
+*/}}
+{{- define "ui.schema-registry.url" -}}
+{{- if (index .Values "schema-registry" "enabled") -}}
+{{- $clientPort := 8081 | int -}}
+{{- printf "%s:%d" (include "ui.schema-registry.fullname" .) $clientPort }}
+{{- else -}}
+{{- printf "%s" (index .Values "schema-registry" "url") }}
+{{- end -}}
+{{- end -}}

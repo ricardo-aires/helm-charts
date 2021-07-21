@@ -86,13 +86,13 @@ One can easily change the `image.tag` to use another version. When using a local
 
 The next configuration related to Schema Registry UI are available:
 
-| Parameter           | Description                                           | Default |
-| ------------------- | ----------------------------------------------------- | ------- |
-| `schemaRegistryURL` | Endpoint for the Schema Registry to manage.           | `nil`   |
-| `allow.global`      | Support for global compatibility level configuration. | `false` |
-| `allow.transitive`  | Support for transitive compatibility levels.          | `false` |
-| `allow.deletion`    | Support for Schema deletion.                          | `false` |
-| `readOnly`          | Support for readonly mode.                            | `false` |
+| Parameter             | Description                                           | Default               |
+| --------------------- | ----------------------------------------------------- | --------------------- |
+| `schema.registry.url` | Endpoint for the Schema Registry to manage.           | default from `kstack` |
+| `allow.global`        | Support for global compatibility level configuration. | `false`               |
+| `allow.transitive`    | Support for transitive compatibility levels.          | `false`               |
+| `allow.deletion`      | Support for Schema deletion.                          | `false`               |
+| `readOnly`            | Support for readonly mode.                            | `false`               |
 
 More information can be found in the [Docker Image Documentation](https://hub.docker.com/r/landoop/schema-registry-ui).
 

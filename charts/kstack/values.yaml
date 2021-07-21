@@ -4,8 +4,6 @@
 
 kafka:
   enabled: true
-  zookeeper:
-    enabled: true
 
 schema-registry:
   enabled: true

@@ -30,7 +30,7 @@ spec:
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           env:
             - name: SCHEMAREGISTRY_URL
-              value: "{{ .Values.schemaRegistryURL }}"
+              value: {{ include "ui.schema-registry.url" . | quote }}
             - name: ALLOW_GLOBAL
               value: "{{ .Values.allow.global }}"
             - name: ALLOW_TRANSITIVE

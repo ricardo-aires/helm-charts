@@ -30,7 +30,7 @@ spec:
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           env:
             - name: CONNECT_URL
-              value: "{{ .Values.kafkaConnectURL }}"
+              value: {{ include "ui.kafka-connect.url" . | quote }}
             - name: PROXY
               value: "true"
             - name: PORT
