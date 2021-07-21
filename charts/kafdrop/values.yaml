@@ -24,7 +24,7 @@ service:
   port: 9000
   nodePort: 30900
 
-## Kafka Cluster Configuration
+  ## Kafka Cluster Configuration
 kafka:
   ## If true, kafka was installed under the same umbrella
   enabled: true

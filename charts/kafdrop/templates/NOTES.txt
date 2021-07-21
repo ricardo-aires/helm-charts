@@ -1,5 +1,0 @@
-** Please be patient while the {{ .Chart.Name }} chart is being deployed in release {{ .Release.Name }} **
-
-This chart bootstraps a Kafdrop that can be accessed from within your cluster:
-
-    {{ include "kafdrop.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.port }}
