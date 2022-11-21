@@ -165,7 +165,7 @@ spec:
           secretName: {{ required "The .Values.kerberos.keyTabSecret is required when kerberos enabled!" .Values.kerberos.keyTabSecret }}
       - name: jaas
         configMap:
-          name: {{ required "The .Values.kerberos.jaasConf is required when kerberos enabled!" .Values.kerberos.krb5Conf }}
+          name: {{ required "The .Values.kerberos.jaasConf is required when kerberos enabled!" .Values.kerberos.jaasConf }}
       {{- end }}
   volumeClaimTemplates:
   - metadata:
