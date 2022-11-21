@@ -46,6 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "zookeeper.selectorLabels" -}}
+app: {{ .Release.Name }}-{{ include "zookeeper.name" . }}
 app.kubernetes.io/name: {{ include "zookeeper.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
@@ -61,7 +62,7 @@ in a format like "zkhost1:port:port;zkhost2:port:port"
 {{- $leaderElectionPort := .Values.port.leader -}}
 {{- $zk := dict "servers" (list) -}}
 {{- range $idx, $v := until (int .Values.replicaCount) }}
-{{- $noop := printf "%s-%d.%s-headless.%s:%d:%d" $name $idx $name $namespace (int $peersPort) (int $leaderElectionPort) | append $zk.servers | set $zk "servers" -}}
+{{- $noop := printf "%s-%d.%s-headless.%s.svc.cluster.local:%d:%d" $name $idx $name $namespace (int $peersPort) (int $leaderElectionPort) | append $zk.servers | set $zk "servers" -}}
 {{- end }}
 {{- printf "%s" (join ";" $zk.servers) | quote -}}
 {{- end -}}
