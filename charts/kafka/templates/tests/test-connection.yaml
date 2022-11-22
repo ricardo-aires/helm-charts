@@ -4,12 +4,15 @@ metadata:
   name: "{{ include "kafka.fullname" . }}-test"
   annotations:
     "helm.sh/hook": test
-    "helm.sh/hook-delete-policy": "before-hook-creation"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
+  serviceAccountName: {{ include "kafka.fullname" . }}-sa
+  restartPolicy: Never
   containers:
-  - name: test-topic
+  - name: {{ include "kafka.fullname" . }}-test
     image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
     imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+    {{- if not .Values.kerberos.enabled }}
     command:
     - sh
     - -c
@@ -24,10 +27,65 @@ spec:
       # Produce a test message to the topic
       (echo "$MESSAGE" | kafka-console-producer --broker-list ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME}) || exit 1
       # Consume a test message from the topic
-      kafka-console-consumer --bootstrap-server ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME} --from-beginning --timeout-ms 10000 --max-messages 1 | grep "$MESSAGE"
+      kafka-console-consumer --bootstrap-server ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME} --group ${GROUP_NAME} --from-beginning --timeout-ms 10000 --max-messages 1 | grep "$MESSAGE"
+    {{- end }}
+    {{- if .Values.kerberos.enabled }}
+    command:
+    - sh
+    - -c
+    - |
+      set -ex
+      # Delete the topic if it exists
+      kafka-topics --bootstrap-server ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME} --delete --if-exists --command-config /etc/kafka/kafka-client.properties
+      # Create the topic
+      kafka-topics --bootstrap-server ${BOOTSTRAP_SERVER} --create --topic ${TOPIC_NAME} --partitions {{ .Values.replicaCount }} --replication-factor 1 --if-not-exists --command-config /etc/kafka/kafka-client.properties || exit 1
+      # Create a message
+      MESSAGE="`date -u`" || exit 1
+      # Produce a test message to the topic
+      (echo "$MESSAGE" | kafka-console-producer --broker-list ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME} --producer.config /etc/kafka/kafka-client.properties) || exit 1
+      # Consume a test message from the topic
+      kafka-console-consumer --bootstrap-server ${BOOTSTRAP_SERVER} --topic ${TOPIC_NAME} --group ${GROUP_NAME} --from-beginning --timeout-ms 10000 --max-messages 1 --consumer.config /etc/kafka/kafka-client.properties | grep "$MESSAGE"
+    {{- end }}
     env:
     - name: TOPIC_NAME
       value: {{ include "kafka.fullname" . }}-test-topic
+    - name: GROUP_NAME
+      value: {{ include "kafka.fullname" . }}-test
     - name: BOOTSTRAP_SERVER
-      value: {{ include "kafka.fullname" . }}-headless:{{ .Values.port.kafkaInternal }}
-  restartPolicy: Never
+      value: {{ include "kafka.bootstrap.server" . }}:{{ .Values.port.kafkaInternal }}
+    resources:
+      requests:
+        memory: "1024Mi"
+        cpu: "500m"
+      limits:
+        memory: "1024Mi"
+        cpu: "500m"
+    {{- if .Values.kerberos.enabled }}
+    volumeMounts:
+    - name: krb5
+      mountPath: /etc/krb5.conf
+      subPath: krb5.conf
+    - name: client-conf
+      mountPath: /etc/kafka/kafka-client.properties
+      subPath: kafka-client.properties
+    - name: generic-user-keytab
+      mountPath: "/keytabs"
+      readOnly: true
+    resources:
+      requests:
+        memory: "1024Mi"
+        cpu: "500m"
+      limits:
+        memory: "1024Mi"
+        cpu: "500m"
+  volumes:
+  - name: krb5
+    configMap:
+      name: {{ required "The .Values.kerberos.krb5Conf is required when kerberos enabled!" .Values.kerberos.krb5Conf }}
+  - name: client-conf
+    configMap:
+        name: {{ required "The .Values.kerberos.kafkaCltProperties is required when kerberos enabled!" .Values.kerberos.kafkaCltProperties }}
+  - name: generic-user-keytab
+    secret:
+      secretName: {{ required "The .Values.kerberos.testUserKeytabSecret is required when kerberos enabled!" .Values.kerberos.testUserKeytabSecret }}
+  {{- end }}

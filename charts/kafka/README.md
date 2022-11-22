@@ -14,44 +14,45 @@ This chart bootstraps a [Kafka Cluster](https://kafka.apache.org) using the [Con
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
-  - [Kubernetes](https://kubernetes.io) v1.21.2
-- [Helm](https://helm.sh) v3.6.3
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
+| component                                                                      | version |
+| ------------------------------------------------------------------------------ | ------- |
+| [Podman](https://docs.podman.io/en/latest/)                                    | v4.3.1  |
+| [Minikube](https://minikube.sigs.k8s.io/docs/)                                 | v1.28.0 |
+| [Kubernetes](https://kubernetes.io)                                            | v1.25.3 |
+| [Helm](https://helm.sh)                                                        | v3.10.2 |
+| [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) | v7.3.0  |
 
 ## Installing the Chart
 
 Add the [chart repository](https://helm.sh/docs/helm/helm_repo_add/), if not done before:
 
-```shell
+```command
 helm repo add rhcharts https://ricardo-aires.github.io/helm-charts/
 ```
 
-To [install](https://helm.sh/docs/helm/helm_install/) the chart with the release name `kstack`:
+To [install](https://helm.sh/docs/helm/helm_install/) the chart with the release name `kafka`:
 
 ```console
-helm install kstack rhcharts/kafka
-NAME: kstack
-LAST DEPLOYED: Mon Jul 19 14:52:17 2021
+$ helm upgrade --install kafka rhcharts/kafka
+Release "kafka" does not exist. Installing it now.
+NAME: kafka
+LAST DEPLOYED: Tue Nov 22 10:30:47 2022
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
 NOTES:
-** Please be patient while the kafka chart is being deployed in release kstack **
+** Please be patient while the kafka chart is being deployed in release kafka **
 
 This chart bootstraps a Kafka Cluster made of "3" brokers using the Confluent stable version that can be accessed from within your cluster:
 
-    kstack-kafka-headless.default:9092
+    kafka-headless.default:9092
 
 More info:
 https://ricardo-aires.github.io/helm-charts/charts/kafka/
-
 $
 ```
 
-By default, it will also install the [zookeeper](https://ricardo-aires.github.io/helm-charts/charts/zookeeper/).
+By default, it will also install the [zookeeper](https://github.com/ricardo-aires/helm-charts/tree/main/charts/zookeeper).
 
 > If an external Zookeeper Ensemble is to be used turn `zookeeper.enabled` to `false` and include the `zookeeper.url`.
 
@@ -69,11 +70,12 @@ One can run the:
 
 - [helm list](https://helm.sh/docs/helm/helm_list/) command to list releases installed
 - [helm status](https://helm.sh/docs/helm/helm_status/) to display the status of the named release
+- [helm test](https://helm.sh/docs/helm/helm_test/) to run tests for a release
 
-To [uninstall](https://helm.sh/docs/helm/helm_uninstall/) the `kstack` deployment run:
+To [uninstall](https://helm.sh/docs/helm/helm_uninstall/) the `kafka` deployment run:
 
 ```console
-helm uninstall kstack
+helm uninstall kafka
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -87,7 +89,7 @@ You can specify each parameter using the `--set key=value[,key=value]` argument 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-helm install kstack -f my-values.yaml rhcharts/kafka
+helm upgrade --install kafka -f my-values.yaml rhcharts/kafka
 ```
 
 A default [values.yaml](./values.yaml) is available and should be checked for more advanced usage.
@@ -100,7 +102,7 @@ By default the [confluentinc/cp-kafka](https://hub.docker.com/r/confluentinc/cp-
 | ------------------ | --------------------------------------------- | --------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image. | `docker.io`                 |
 | `image.repository` | Docker Image of Confluent Kafka.              | `confluentinc/cp-kafka` |
-| `image.tag`        | Docker Image Tag of Confluent Kafka.          | `6.2.0`                     |
+| `image.tag`        | Docker Image Tag of Confluent Kafka.          | `7.3.0`                     |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -118,22 +120,22 @@ The configuration parameters in this section control the resources requested and
 
 The next configuration related to Kafka Broker are available:
 
-| Parameter                       | Description                                                                                                                                     | Default      |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `autoCreateTopicsEnable`        | Enable auto creation of topic on the server.                                                                                                    | `false`      |
-| `deleteTopicEnable`             | Delete topic through the admin tool will have no effect if this config is turned off.                                                           | `true`       |
-| `offsetsTopicReplicationFactor` | The replication factor for the offsets topic.                                                                                                   | `3`          |
-| `numPartitions`                 | The default number of log partitions per topic.                                                                                                 | `3`          |
-| `defaultReplicationFactor`      | The default replication factors for automatically created topics.                                                                               | `3`          |
-| `minInsyncReplicas`             | The minimum number of replicas that must acknowledge a write for the write to be considered successful.                                         | `2`          |
-| `uncleanLeaderElectionEnable`   | Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss. | `false`      |
-| `logFlushIntervalMessages`      | The number of messages accumulated on a log partition before messages are flushed to disk                                                       | `10000`      |
-| `logFlushIntervalMs`            | The maximum time in ms that a message in any topic is kept in memory before flushed to disk.                                                    | `1000`       |
-| `logRetentionBytes`             | The maximum size of the log before deleting it.                                                                                                 | `1073741824` |
-| `logRetentionCheckIntervalMs`   | The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion.                                             | `300000`     |
-| `logRetentionHours`             | The number of hours to eep a log file before deleting it (in hours).                                                                            | `168`        |
-| `logSegmentBytes`               | The maximum size of a single log file.                                                                                                          | `1073741824` |
-| `messageMaxBytes`               | The largest record batch size allowed by Kafka (after compression if compression is enabled).                                                   | `1048588`    |
+| Parameter                       | Description                                                                                                                                     | Default                 |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `autoCreateTopicsEnable`        | Enable auto creation of topic on the server.                                                                                                    | `false`                 |
+| `deleteTopicEnable`             | Delete topic through the admin tool will have no effect if this config is turned off.                                                           | `true`                  |
+| `offsetsTopicReplicationFactor` | The replication factor for the offsets topic.                                                                                                   | `3`                     |
+| `numPartitions`                 | The default number of log partitions per topic.                                                                                                 | `3`                     |
+| `defaultReplicationFactor`      | The default replication factors for automatically created topics.                                                                               | `3`                     |
+| `minInsyncReplicas`             | The minimum number of replicas that must acknowledge a write for the write to be considered successful.                                         | `2`                     |
+| `uncleanLeaderElectionEnable`   | Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss. | `false`                  |
+| `logFlushIntervalMessages`      | The number of messages accumulated on a log partition before messages are flushed to disk                                                       | `10000`                 |
+| `logFlushIntervalMs`            | The maximum time in ms that a message in any topic is kept in memory before flushed to disk.                                                    | `1000`                  |
+| `logRetentionBytes`             | The maximum size of the log before deleting it.                                                                                                 | `1073741824`            |
+| `logRetentionCheckIntervalMs`   | The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion.                                             | `300000`                |
+| `logRetentionHours`             | The number of hours to eep a log file before deleting it (in hours).                                                                            | `168`                   |
+| `logSegmentBytes`               | The maximum size of a single log file.                                                                                                          | `1073741824`            |
+| `messageMaxBytes`               | The largest record batch size allowed by Kafka (after compression if compression is enabled).                                                   | `1048588`               |
 
 More information can be found in the [Apache Kafka Documentation](https://kafka.apache.org/documentation/#brokerconfigs) and in the [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html).
 
@@ -161,6 +163,20 @@ This will create a [nodeport service](https://kubernetes.io/docs/concepts/servic
 | `kafka-1` | `9094:32401/TCP` |
 | `kafka-2` | `9094:32403/TCP` |
 
+### Kerberos Authentication
+
+This chart is prepared to enable [Kerberos authentication in Kafka](https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html#brokers)
+
+| Parameter               | Description                                | Default |
+| ----------------------- | ------------------------------------------ | ------- |
+| `kerberos.enabled`      | Boolean to control if Kerberos is enabled. | `false` |
+| `kerberos.krb5Conf`     | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `krb5.conf`, Kerberos [Configuration file](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) | `nil`**¹** |
+| `kerberos.keyTabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) | `nil`**¹** |
+| `kerberos.jaasConf`     | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the JAAS configuration files per host.  | `nil`**¹** |
+| `kerberos.testUserKeytabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) for the test user. Mandatory when `kerberos.testUser` is set | `nil` |
+
+> **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist beforehand.
+
 ### Data Persistence
 
 The Kafka Kafka Data directory can be tweaked with:
@@ -168,13 +184,15 @@ The Kafka Kafka Data directory can be tweaked with:
 | Parameter           | Description                                         | Default |
 | ------------------- | --------------------------------------------------- | ------- |
 | `data.storageClass` | Valid options: `nil`, `"-"`, or storage class name. | `nil`   |
-| `data.storageSize`  | Size for data dir.                                  | `10Gi`   |
+| `data.storageSize`  | Size for data dir.                                  | `10Gi`  |
 
 This will allow the creation of a [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) using a specific [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/). However, [Access Mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes).
 
 ### Resources for Containers
 
 Regarding the management of [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) the next defaults regarding requests and limits are set:
+
+With this in mind the next defaults regarding resources and limits are set:
 
 | Parameter                   | Description                                                             | Default  |
 | --------------------------- | ----------------------------------------------------------------------- | -------- |

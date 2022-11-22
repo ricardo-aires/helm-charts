@@ -18,11 +18,12 @@ spec:
       labels:
         {{- include "kafka.selectorLabels" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ include "kafka.fullname" . }}-sa
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       affinity:
       {{- if .Values.affinity }}
-{{ toYaml .Values.affinity | indent 8 }}
+        {{ toYaml .Values.affinity | indent 8 }}
       {{- else }}
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -105,30 +106,46 @@ spec:
           value: {{ .Values.log4jRootLoglevel | quote }}
         - name: KAFKA_LOG4J_LOGGERS
           value: {{ .Values.log4jLoggers | quote }}
+        {{- if .Values.kerberos.enabled }}
+        - name: KAFKA_SECURITY_INTER_BROKER_PROTOCOL
+          value: SASL_PLAINTEXT
+        - name: KAFKA_SASL_KERBEROS_SERVICE_NAME
+          value: "kafka"
+        - name: KAFKA_LISTENERS
+          value: "SASL_PLAINTEXT://:{{ .Values.port.kafkaInternal }},EXTERNAL://:{{ .Values.port.kafkaExternal }}"
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "SASL_PLAINTEXT:SASL_PLAINTEXT,EXTERNAL:SASL_PLAINTEXT"
+        {{- else }}
         - name: KAFKA_LISTENERS
           value: "PLAINTEXT://:{{ .Values.port.kafkaInternal }},EXTERNAL://:{{ .Values.port.kafkaExternal }}"
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: "PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
+        {{- end }}
+        - name: ZOOKEEPER_SASL_ENABLED
+          value: {{ .Values.zookeeper.kerberos.enabled | quote }}
         command:
         - "sh"
         - "-exc"
         - |
           export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
           {{- if .Values.isDocker }}
-          export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.{{ include "kafka.fullname" . }}-headless.${POD_NAMESPACE}:{{ .Values.port.kafkaInternal }},EXTERNAL://127.0.0.1:$(({{ .Values.externalAccess.initNodePort }} + ${KAFKA_BROKER_ID})) && \
+          export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://{{ include "kafka.listener" . }}:{{ .Values.port.kafkaInternal }},EXTERNAL://127.0.0.1:$(({{ .Values.externalAccess.initNodePort }} + ${KAFKA_BROKER_ID})) && \
+          {{- else if .Values.kerberos.enabled }}
+          export KAFKA_ADVERTISED_LISTENERS=SASL_PLAINTEXT://{{ include "kafka.listener" . }}:{{ .Values.port.kafkaInternal }},EXTERNAL://{{ include "kafka.listener" . }}:$(({{ .Values.externalAccess.initNodePort }} + ${KAFKA_BROKER_ID})) && \
+          export KAFKA_OPTS="-Djava.security.krb5.conf=/etc/krb5.conf -Djava.security.auth.login.config=/jaas/${POD_NAME}_jaas.conf -Dsun.security.krb5.debug=false" && \
           {{- else }}
-          export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.{{ include "kafka.fullname" . }}-headless.${POD_NAMESPACE}:{{ .Values.port.kafkaInternal }},EXTERNAL://${HOST_IP}:$(({{ .Values.externalAccess.initNodePort }} + ${KAFKA_BROKER_ID})) && \
+          export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://{{ include "kafka.listener" . }}:{{ .Values.port.kafkaInternal }},EXTERNAL://${HOST_IP}:$(({{ .Values.externalAccess.initNodePort }} + ${KAFKA_BROKER_ID})) && \
           {{- end }}
           exec /etc/confluent/docker/run
         ports:
-        - name: kafka-internal
+        - name: tcp-kafka-int
           containerPort: {{ .Values.port.kafkaInternal }}
-        - name: kafka-external
+        - name: tcp-kafka-ext
           containerPort: {{ .Values.port.kafkaExternal }}
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
           tcpSocket:
-            port: kafka-internal
+            port: tcp-kafka-int
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
@@ -138,7 +155,7 @@ spec:
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
           tcpSocket:
-            port: kafka-internal
+            port: tcp-kafka-int
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -152,6 +169,17 @@ spec:
           mountPath: /etc/kafka
         - name: logs
           mountPath: /var/log
+        {{- if or .Values.kerberos.enabled .Values.zookeeper.kerberos.enabled }}
+        - name: krb5
+          mountPath: /etc/krb5.conf
+          subPath: krb5.conf
+        - name: keytabs
+          mountPath: /keytabs
+          readOnly: true
+        - name: jaas
+          mountPath: /jaas
+          readOnly: true
+        {{- end }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
         resources:
@@ -161,6 +189,17 @@ spec:
         emptyDir: {}
       - name: logs
         emptyDir: {}
+      {{- if .Values.kerberos.enabled }}
+      - name: krb5
+        configMap:
+          name: {{ required "The .Values.kerberos.krb5Conf is required when kerberos enabled!" .Values.kerberos.krb5Conf }}
+      - name: keytabs
+        secret:
+          secretName: {{ required "The .Values.kerberos.keyTabSecret is required when kerberos enabled!" .Values.kerberos.keyTabSecret }}
+      - name: jaas
+        configMap:
+          name: {{ required "The .Values.kerberos.jaasConf is required when kerberos enabled!" .Values.kerberos.jaasConf }}
+      {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: data
