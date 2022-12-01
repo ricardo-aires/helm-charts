@@ -113,6 +113,8 @@ This chart is prepared to enable [Kerberos authentication in Kafka](https://docs
 | `kerberos.enabled`      | Boolean to control if Kerberos is enabled. | `false` |
 | `kerberos.krb5Conf`     | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `krb5.conf`, Kerberos [Configuration file](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) | `nil`**¹** |
 | `kerberos.keyTabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) | `nil`**¹** |
+| `kafka.kerberos.serviceName` | Primary of the Principal (user, service, host) used to connect to Kafka Brokers | `nil` |
+| `kafka.kerberos.domain` | REALM of the Principal used to connect to Kafka Brokers | `nil` |
 
 > **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist beforehand.
 

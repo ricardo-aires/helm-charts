@@ -7,9 +7,17 @@ metadata:
   annotations:
     "helm.sh/hook": test
 spec:
+  serviceAccountName: {{ include "kafka-connect.fullname" . }}-sa
   containers:
     - name: wget
       image: busybox
       command: ['wget']
       args: ['-qO-', '{{ include "kafka-connect.fullname" . }}:{{ .Values.port }}']
+      resources:
+        requests:
+          memory: "200Mi"
+          cpu: "10m"
+        limits:
+          memory: "200Mi"
+          cpu: "10m"
   restartPolicy: Never

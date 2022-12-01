@@ -18,6 +18,7 @@ spec:
       labels:
         {{- include "kafka-connect.selectorLabels" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ include "kafka-connect.fullname" . }}-sa
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -63,6 +64,40 @@ spec:
               value: {{ .Values.pluginPath | quote }}
             - name: CONNECT_CONFLUENT_SUPPORT_METRICS_ENABLE
               value: {{ .Values.confluentSupportMetricsEnable | quote }}
+            - name: CONNECT_CONFIG_PROVIDERS
+              value: file
+            - name: CONNECT_CONFIG_PROVIDERS_FILE_CLASS
+              value: org.apache.kafka.common.config.provider.FileConfigProvider
+            {{- if .Values.kafka.kerberos.enabled }}
+            - name: KAFKA_OPTS
+              value: -Dsun.security.krb5.debug=false
+                    -Djava.security.krb5.conf=/etc/krb5.conf
+                    -Djava.security.auth.login.config=/jaas/ks-connect.conf
+            - name: CONNECT_SECURITY_PROTOCOL
+              value: SASL_PLAINTEXT
+            - name: CONNECT_PRODUCER_SECURITY_PROTOCOL
+              value: SASL_PLAINTEXT
+            - name: CONNECT_CONSUMER_SECURITY_PROTOCOL
+              value: SASL_PLAINTEXT
+            - name: CONNECT_SASL_MECHANISM
+              value: GSSAPI
+            - name: CONNECT_SASL_KERBEROS_SERVICE_NAME 
+              value: kafka
+            - name: CONNECT_SASL_JAAS_CONFIG
+              value: com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab="/keytabs/{{ .Values.kafka.kerberos.serviceName | required "Missing kafka.kerberos.serviceName" }}.keytab" principal="{{ .Values.kafka.kerberos.serviceName }}@{{ .Values.kafka.kerberos.domain | required "Missing kafka.kerberos.domain" }}";
+            - name: CONNECT_PRODUCER_SASL_MECHANISM
+              value: GSSAPI
+            - name: CONNECT_PRODUCER_SASL_KERBEROS_SERVICE_NAME
+              value: kafka
+            - name: CONNECT_PRODUCER_SASL_JAAS_CONFIG
+              value: com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab="/keytabs/{{ .Values.kafka.kerberos.serviceName }}.keytab" principal="{{ .Values.kafka.kerberos.serviceName }}@{{ .Values.kafka.kerberos.domain }}";
+            - name: CONNECT_CONSUMER_SASL_MECHANISM
+              value: GSSAPI
+            - name: CONNECT_CONSUMER_SASL_KERBEROS_SERVICE_NAME
+              value: kafka
+            - name: CONNECT_CONSUMER_SASL_JAAS_CONFIG
+              value: com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab="/keytabs/{{ .Values.kafka.kerberos.serviceName }}.keytab" principal="{{ .Values.kafka.kerberos.serviceName }}@{{ .Values.kafka.kerberos.domain }}";
+            {{- end }}
           ports:
             - name: tcp
               containerPort: {{ .Values.port }}
@@ -96,6 +131,17 @@ spec:
             mountPath: /etc/kafka-connect
           - name: config2
             mountPath: /etc/kafka
+          {{- if .Values.kerberos.enabled  }}
+          - name: krb5
+            mountPath: /etc/krb5.conf
+            subPath: krb5.conf
+          - name: keytabs
+            mountPath: /keytabs
+            readOnly: true
+          - name: jaas
+            mountPath: /jaas
+            readOnly: true
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           resources:
@@ -107,3 +153,14 @@ spec:
         emptyDir: {}
       - name: config2
         emptyDir: {}
+      {{- if .Values.kerberos.enabled }}
+      - name: krb5
+        configMap:
+          name: {{ required "The .Values.kerberos.krb5Conf is required when kerberos enabled!" .Values.kerberos.krb5Conf }}
+      - name: keytabs
+        secret:
+          secretName: {{ required "The .Values.kerberos.keyTabSecret is required when kerberos enabled!" .Values.kerberos.keyTabSecret }}
+      - name: jaas
+        configMap:
+          name: {{ required "The .Values.kerberos.jaasConf is required when kerberos enabled!" .Values.kerberos.jaasConf }}
+      {{- end }}
