@@ -46,6 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "ksqldb.selectorLabels" -}}
+app: {{ .Release.Name }}-{{ include "ksqldb.name" . }}
 app.kubernetes.io/name: {{ include "ksqldb.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
@@ -56,7 +57,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "ksqldb.kafka.fullname" -}}
 {{- $name := default "kafka" (index .Values "kafka" "nameOverride") -}}
-{{- printf "%s-%s-headless" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -65,8 +66,13 @@ else use user-provided URL
 */}}
 {{- define "ksqldb.kafka.bootstrapServers" -}}
 {{- if (index .Values "kafka" "enabled") -}}
+{{- $name := default "kafka"  (include "ksqldb.kafka.fullname" .) -}}
+{{- $namespace := .Release.Namespace }}
 {{- $clientPort := 9092 | int -}}
-{{- printf "%s:%d" (include "ksqldb.kafka.fullname" .) $clientPort }}
+{{- range $k, $e := until (.Values.kafka.replicaCount|int) -}}
+{{- if $k}}{{- printf ","}}{{end}}
+{{- printf "%s-%d.%s-headless.%s.svc.cluster.local:%d" $name $k $name $namespace $clientPort -}}
+{{- end -}}
 {{- else -}}
 {{- printf "%s" (index .Values "kafka" "bootstrapServers") }}
 {{- end -}}
@@ -88,7 +94,7 @@ else use user-provided URL
 {{- define "ksqldb.schema-registry.url" -}}
 {{- if (index .Values "schema-registry" "enabled") -}}
 {{- $clientPort := 8081 | int -}}
-{{- printf "%s:%d" (include "ksqldb.schema-registry.fullname" .) $clientPort }}
+{{- printf "http://%s:%d" (include "ksqldb.schema-registry.fullname" .) $clientPort }}
 {{- else -}}
 {{- printf "%s" (index .Values "schema-registry" "url") }}
 {{- end -}}
@@ -110,7 +116,7 @@ else use user-provided URL
 {{- define "ksqldb.kafka-connect.url" -}}
 {{- if (index .Values "kafka-connect" "enabled") -}}
 {{- $clientPort := 8083 | int -}}
-{{- printf "%s:%d" (include "ksqldb.kafka-connect.fullname" .) $clientPort }}
+{{- printf "http://%s:%d" (include "ksqldb.kafka-connect.fullname" .) $clientPort }}
 {{- else -}}
 {{- printf "%s" (index .Values "kafka-connect" "url") }}
 {{- end -}}
@@ -119,7 +125,7 @@ else use user-provided URL
 {{/*
 Default service id to Release Name but allow it to be overridden
 */}}
-{{- define "ksqldb.servive.id" -}}
+{{- define "ksqldb.service.id" -}}
 {{- if .Values.overrideGroupId -}}
 {{- .Values.overrideGroupId -}}
 {{- else -}}

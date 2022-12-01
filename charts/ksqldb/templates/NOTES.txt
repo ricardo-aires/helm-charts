@@ -1,5 +1,11 @@
 ** Please be patient while the {{ .Chart.Name }} chart is being deployed in release {{ .Release.Name }} **
 
+{{- if .Values.queriesFileConfigMap }}
+This chart bootstraps a ksqlDB running in headless mode.
+
+{{- else }}
 This chart bootstraps a ksqlDB that can be accessed from within your cluster:
 
     {{ include "ksqldb.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.port }}
+
+{{- end }}

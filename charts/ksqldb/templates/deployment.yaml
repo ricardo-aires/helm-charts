@@ -11,15 +11,17 @@ spec:
       {{- include "ksqldb.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "ksqldb.selectorLabels" . | nindent 8 }}
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
       containers:
         - name: {{ .Chart.Name }}
         {{- with .Values.imagePullSecrets }}
@@ -30,7 +32,7 @@ spec:
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           env:
             - name: KSQL_KSQL_SERVICE_ID
-              value: "{{ include "ksqldb.servive.id" . }}_ksqldb_"
+              value: "{{ include "ksqldb.service.id" . }}_ksqldb_"
             - name: KSQL_BOOTSTRAP_SERVERS
               value: {{ include "ksqldb.kafka.bootstrapServers" . | quote }}
             - name: KSQL_KSQL_STREAMS_BOOTSTRAP_SERVERS
@@ -48,12 +50,32 @@ spec:
             - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
               value: {{ .Values.loggingProcessing.topicAutoCreate | quote }}
             - name: KSQL_CONFLUENT_SUPPORT_METRICS_ENABLE
-              value:  {{ .Values.confluentSupportMetricsEnable | quote }}
+              value: {{ .Values.confluentSupportMetricsEnable | quote }}
+            - name: KSQL_KSQL_SINK_REPLICAS
+              value: {{ .Values.internalTopicReplicas | quote }}
+            - name: KSQL_KSQL_STREAMS_REPLICATION_FACTOR
+              value: {{ .Values.internalTopicReplicas | quote }}
+            - name: KSQL_KSQL_INTERNAL_TOPIC_REPLICAS
+              value: {{ .Values.internalTopicReplicas | quote }}
+            {{- if .Values.queriesFileConfigMap }}
+            - name: KSQL_KSQL_QUERIES_FILE
+              value: /etc/ksql/queries/queries.sql
+            {{- end }}
+            {{- if .Values.kerberos.enabled }}
+            - name: KSQL_SECURITY_PROTOCOL
+              value: SASL_PLAINTEXT
+            - name: KSQL_SASL_MECHANISM
+              value: GSSAPI
+            - name: KSQL_SASL_KERBEROS_SERVICE_NAME
+              value: kafka
+            - name: KSQL_SASL_JAAS_CONFIG
+              value: com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab="/keytabs/{{ .Values.kerberos.serviceName }}.keytab" principal="{{ .Values.kerberos.serviceName }}@{{ .Values.kerberos.domain }}";
+            {{- end }}
           ports:
             - name: tcp
               containerPort: {{ .Values.port }}
               protocol: TCP
-          {{- if .Values.livenessProbe.enabled }}
+          {{- if and .Values.livenessProbe.enabled (not .Values.queriesFileConfigMap) }}
           livenessProbe:
             httpGet:
               path: /
@@ -64,7 +86,7 @@ spec:
             successThreshold: {{ .Values.livenessProbe.successThreshold }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
           {{- end }}
-          {{- if .Values.readinessProbe.enabled }}
+          {{- if and .Values.readinessProbe.enabled (not .Values.queriesFileConfigMap) }}
           readinessProbe:
             httpGet:
               path: 
@@ -75,7 +97,35 @@ spec:
             successThreshold: {{ .Values.readinessProbe.successThreshold }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           {{- end }}
+          volumeMounts:
+          {{- if .Values.kerberos.enabled }}
+          - name: krb5
+            mountPath: /etc/krb5.conf
+            subPath: krb5.conf
+            readOnly: true
+          - name: keytabs
+            mountPath: /keytabs
+            readOnly: true
+          {{- end }}
+          {{- if .Values.queriesFileConfigMap }}
+          - name: ksql-queries
+            mountPath: /etc/ksql/queries
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      {{- if .Values.kerberos.enabled }}
+      - name: krb5
+        configMap:
+          name: {{ required "The .Values.kerberos.krb5Conf is required when kerberos enabled!" .Values.kerberos.krb5Conf }}
+      - name: keytabs
+        secret:
+          secretName: {{ required "The .Values.kerberos.keyTabSecret is required when kerberos enabled!" .Values.kerberos.keyTabSecret }}
+      {{- end }}
+      {{- if .Values.queriesFileConfigMap }}
+      - name:  ksql-queries
+        configMap:
+          name: {{ .Values.queriesFileConfigMap }}
+      {{- end }}
