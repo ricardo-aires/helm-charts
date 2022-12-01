@@ -123,6 +123,16 @@ spec:
         {{- end }}
         - name: ZOOKEEPER_SASL_ENABLED
           value: {{ .Values.zookeeper.kerberos.enabled | quote }}
+        {{- if .Values.acls.enabled }}
+        - name: KAFKA_ZOOKEEPER_SET_ACL
+          value: "true"
+        - name: KAFKA_SUPER_USERS
+          value: "User:kafka"
+        - name: KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND
+          value: "false"
+        - name: KAFKA_AUTHORIZER_CLASS_NAME
+          value: "kafka.security.authorizer.AclAuthorizer"
+        {{- end }}
         command:
         - "sh"
         - "-exc"

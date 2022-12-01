@@ -177,6 +177,16 @@ This chart is prepared to enable [Kerberos authentication in Kafka](https://docs
 
 > **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist beforehand.
 
+### Authorization Using ACLs
+
+This chart is prepared to enable [Authorization using ACLs in Kafka](https://docs.confluent.io/platform/current/kafka/authorization.html) but doesn't manage ACLs.
+
+> To enable ACLs, an authentication mechanism must also be enabled, e.g. Kerberos.
+
+| Parameter      | Description                            | Default |
+| -------------- | -------------------------------------- | ------- |
+| `acls.enabled` | Boolean to control if ACLs are enabled | `false` |
+
 ### Data Persistence
 
 The Kafka Kafka Data directory can be tweaked with:
