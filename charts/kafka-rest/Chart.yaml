@@ -1,6 +1,6 @@
 apiVersion: v2
 name: kafka-rest
-version: 0.1.0
+version: 0.2.0
 description: A Helm chart for Confluent Kafka REST on Kubernetes
 type: application
 keywords:
@@ -16,4 +16,4 @@ maintainers:
     email: ricardoaireshenriques@gmail.com
     url: https://github.com/ricardo-aires
 icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
-appVersion: 6.2.0
+appVersion: 7.3.0
