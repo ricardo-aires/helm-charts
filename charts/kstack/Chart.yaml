@@ -1,6 +1,6 @@
 apiVersion: v2
 name: kstack
-version: 0.1.1
+version: 0.2.0
 description: A Helm chart for Confluent Platform on Kubernetes
 type: application
 keywords:
@@ -13,42 +13,32 @@ sources:
   - https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 dependencies:
   - name: kafka
-    version: 0.1.0
+    version: 0.2.0
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafka.enabled
     alias: kafka
   - name: schema-registry
-    version: 0.1.0
+    version: 0.2.0
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: schema-registry.enabled
     alias: schema-registry
-  - name: schema-registry-ui
-    version: 0.1.0
-    repository: https://ricardo-aires.github.io/helm-charts/
-    condition: schema-registry-ui.enabled
-    alias: schema-registry-ui
   - name: kafka-connect
-    version: 0.1.1
+    version: 0.2.1
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafka-connect.enabled
     alias: kafka-connect
-  - name: kafka-connect-ui
-    version: 0.1.0
-    repository: https://ricardo-aires.github.io/helm-charts/
-    condition: kafka-connect-ui.enabled
-    alias: kafka-connect-ui
   - name: kafka-rest
-    version: 0.1.0
+    version: 0.2.0
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafka-rest.enabled
     alias: kafka-rest
   - name: ksqldb
-    version: 0.1.0
+    version: 0.2.0
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: ksqldb.enabled
     alias: ksqldb
   - name: kafdrop
-    version: 0.1.0
+    version: 0.2.0
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafdrop.enabled
     alias: kafdrop
@@ -57,4 +47,4 @@ maintainers:
     email: ricardoaireshenriques@gmail.com
     url: https://github.com/ricardo-aires
 icon: https://svn.apache.org/repos/asf/comdev/project-logos/originals/kafka.svg
-appVersion: 6.2.0
+appVersion: 7.3.0

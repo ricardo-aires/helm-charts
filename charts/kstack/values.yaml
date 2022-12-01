@@ -4,23 +4,23 @@
 
 kafka:
   enabled: true
+  zookeeper:
+    enabled: true
 
 schema-registry:
   enabled: true
-
-schema-registry-ui:
-  enabled: false
+  kafka:
+    enabled: true
 
 kafka-connect:
   enabled: true
-
-kafka-connect-ui:
-  enabled: false
-
-ksqldb:
-  enabled: false
+  kafka:
+    enabled: true
 
 kafdrop:
+  enabled: true
+
+ksqldb:
   enabled: false
 
 kafka-rest:
