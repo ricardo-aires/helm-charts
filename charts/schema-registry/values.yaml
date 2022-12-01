@@ -31,9 +31,19 @@ port: 8081
 ## Kafka Cluster Configuration
 kafka:
   ## If true, kafka was installed under the same umbrella
-  enabled: true
+  enabled: false
+  replicaCount: 3
   ## If outside or custom kafka a bootstrap server is required
   bootstrapServers: PLAINTEXT://ks-kafka-headless:9092
+
+## Kafka Broker Kerberos
+## ref: https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html#brokers
+kerberos:
+  enabled: false
+  krb5Conf:
+  keyTabSecret:
+  serviceName:
+  domain:
 
 ## Configure Liveness and Readiness Probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
@@ -70,7 +80,7 @@ securityContext:
 
 ## Configure Resources for Containers
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-resources: 
+resources:
   limits:
     cpu: 200m
     memory: 1400Mi

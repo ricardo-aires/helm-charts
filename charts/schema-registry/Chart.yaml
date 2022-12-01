@@ -1,6 +1,6 @@
 apiVersion: v2
 name: schema-registry
-version: 0.1.0
+version: 0.2.0
 description: A Helm chart for Confluent Schema Registry on Kubernetes
 type: application
 keywords:
@@ -16,4 +16,4 @@ maintainers:
     email: ricardoaireshenriques@gmail.com
     url: https://github.com/ricardo-aires
 icon: https://assets.confluent.io/m/61d0fe7faad2f991/original/icon-schema-registry.svg
-appVersion: 6.2.0
+appVersion: 7.3.0
