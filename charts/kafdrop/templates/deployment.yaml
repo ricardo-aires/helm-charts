@@ -20,6 +20,7 @@ spec:
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      serviceAccountName: {{ include "kafdrop.fullname" . }}-sa
       containers:
         - name: {{ .Chart.Name }}
         {{- with .Values.imagePullSecrets }}
@@ -34,7 +35,13 @@ spec:
             - name: SCHEMAREGISTRY_CONNECT
               value: {{ include "kafdrop.schema-registry.url" . | quote }}
             - name: JVM_OPTS
-              value: {{ .Values.heapOpts  | quote}}
+              value: "{{ .Values.heapOpts }} -Dlog4j2.formatMsgNoLookups=true"
+            {{- if .Values.kerberos.enabled }}
+            - name: KAFKA_PROPERTIES_FILE
+              value: /etc/kafka/kafka.properties
+            {{- end }}
+            - name: CMD_ARGS
+              value: "{{ .Values.cmdArgs }}"
           ports:
             - name: tcp
               containerPort: {{ .Values.service.port }}
@@ -61,13 +68,35 @@ spec:
             successThreshold: {{ .Values.readinessProbe.successThreshold }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           {{- end }}
+          volumeMounts:
+          - name: tmp
+            mountPath: /tmp
+          {{- if .Values.kerberos.enabled }}
+          - name: keytabs
+            mountPath: /keytabs
+            readOnly: true
+          - name: krb5
+            mountPath: /etc/krb5.conf
+            subPath: krb5.conf
+          - name: kafka-properties
+            mountPath: /etc/kafka/
+            readOnly: true
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-          - name: tmp
-            mountPath: /tmp
       volumes:
       - name: tmp
         emptyDir: {}
+      {{- if .Values.kerberos.enabled }}
+      - name: krb5
+        configMap:
+          name: {{ required "The .Values.kerberos.krb5Conf is required when kerberos enabled!" .Values.kerberos.krb5Conf }}
+      - name: keytabs
+        secret:
+          secretName: {{ required "The .Values.kerberos.keyTabSecret is required when kerberos enabled!" .Values.kerberos.keyTabSecret }}
+      - name: kafka-properties
+        configMap:
+          name: {{ include "kafdrop.fullname" . }}
+      {{- end }}

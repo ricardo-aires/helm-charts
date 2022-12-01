@@ -7,9 +7,17 @@ metadata:
   annotations:
     "helm.sh/hook": test
 spec:
+  serviceAccountName: {{ include "kafdrop.fullname" . }}-sa
   containers:
     - name: wget
       image: busybox
       command: ['wget']
       args: [ '-qO-', '{{ include "kafdrop.fullname" . }}:{{ .Values.service.port }}/actuator/health']
+      resources:
+        requests:
+          memory: "200Mi"
+          cpu: "10m"
+        limits:
+          memory: "200Mi"
+          cpu: "10m"
   restartPolicy: Never

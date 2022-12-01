@@ -17,25 +17,39 @@ fullnameOverride: ""
 replicaCount: 1
 
 ## Kafdrop Configuration
-## ref: https://docs.confluent.io/platform/current/connect/references/allconfigs.html
+## ref: https://github.com/obsidiandynamics/kafdrop
 heapOpts: -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0
+cmdArgs: ""
 service:
-  type: NodePort
+  type: ClusterIP
   port: 9000
   nodePort: 30900
 
-  ## Kafka Cluster Configuration
+ingress:
+  hostDomain:
+
+## Kafka Cluster Configuration
 kafka:
   ## If true, kafka was installed under the same umbrella
   enabled: true
+  replicaCount: 3
   ## If outside or custom kafka a bootstrap server is required
   bootstrapServers: ks-kafka-headless:9092
+
+## Kafka Broker Kerberos
+## ref: https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html#brokers
+kerberos:
+  enabled: false
+  krb5Conf:
+  keyTabSecret:
+  serviceName:
+  domain:
 
 ## Schema Registry Configuration
 schema-registry:
   ## If true, schema-registry was installed under the same umbrella
   enabled: true
-  ## If outside or custom a URL and port are required to connect
+  ## If outside or custom a URL and port are required to connect. Remember to include the protocol http:// or https://
   url:
 
 ## Configure Liveness and Readiness Probes
@@ -73,7 +87,7 @@ securityContext:
 
 ## Configure Resources for Containers
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-resources: 
+resources:
   limits:
     cpu: 400m
     memory: 440Mi
