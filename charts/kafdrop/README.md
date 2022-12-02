@@ -10,12 +10,15 @@ Kafdrop is a web UI for viewing Kafka topics and browsing consumer groups. The t
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
-  - [Kubernetes](https://kubernetes.io) v1.21.2
-- [Helm](https://helm.sh) v3.6.3
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
+
+| component                                                                      | version |
+| ------------------------------------------------------------------------------ | ------- |
+| [Podman](https://docs.podman.io/en/latest/)                                    | v4.3.1  |
+| [Minikube](https://minikube.sigs.k8s.io/docs/)                                 | v1.28.0 |
+| [Kubernetes](https://kubernetes.io)                                            | v1.25.3 |
+| [Helm](https://helm.sh)                                                        | v3.10.2 |
+| [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) | v7.3.0  |
+| [Kafdrop](https://github.com/obsidiandynamics/kafdrop)                         | v3.30.0 |
 
 ## Installing the Chart
 
@@ -28,19 +31,13 @@ helm repo add rhcharts https://ricardo-aires.github.io/helm-charts/
 By default this chart is set to use the umbrella chart [kstack](https://github.com/ricardo-aires/helm-charts/charts/kstack), but can be run against an external Kafka by passing:
 
 ```console
-helm install --set kafka.enabled=false --set kafka.bootstrapServers=kstack-kafka-headless.default:9092 ktool rhcharts/kafdrop
-NAME: ktool
-LAST DEPLOYED: Tue Mar 23 18:35:37 2021
-NAMESPACE: default
+$ helm upgrade --install aires --set kafka.enabled=false --set kafka.bootstrapServers=kstack-kafka-headless.default:9092 rhcharts/kafdrop
+Release "aires" has been upgraded. Happy Helming!
+NAME: aires
+LAST DEPLOYED: Wed Mar 31 13:37:27 2021
+NAMESPACE: kstack-x0
 STATUS: deployed
-REVISION: 1
-NOTES:
-** Please be patient while the kafdrop chart is being deployed in release ktool **
-
-This chart bootstraps a kafdrop that can be accessed from within your cluster:
-
-    ktool-kafdrop.default:9000
-
+REVISION: 2
 $
 ```
 
@@ -80,13 +77,31 @@ By default the [obsidiandynamics/kafdrop](https://hub.docker.com/r/obsidiandynam
 | ------------------ | ---------------------------------------------- | -------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                |
 | `image.repository` | Docker Image of Kafdrop.                       | `obsidiandynamics/kafdrop` |
-| `image.tag`        | Docker Image Tag of Kafdrop.                   | `3.27.0`                   |
+| `image.tag`        | Docker Image Tag of Kafdrop.                   | `3.30.0`                   |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
+
+> The image is not being built for `arm`, see [issue](https://github.com/obsidiandynamics/kafdrop/issues/443), as a workaround we can use this [image](https://github.com/arm64-compat/kafdrop/pkgs/container/kafdrop)
+
+### Command Arguments
+
+By default no extra arguments are passed, it can be change using
+
+| Parameter | Description                       |
+| --------- | --------------------------------- |
+| `cmArgs`   | Command line arguments to Kafdrop |
+
+Example, disable topic deletion:
+
+```yaml
+cmdArgs: "--topic.deleteEnabled=false"
+```
 
 ### Ports used by Kafdrop
 
 By default the [Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) will expose the pods in the port `9000`, `port`.
+
+If `service.type` is change to `NodePort` the created service will be a [nodeport service](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) that will expose Kafdrop in the  `nodePort` given.
 
 ```yaml
 service:
@@ -95,7 +110,19 @@ service:
   nodePort: 30900
 ```
 
-If `service.type` is change to `NodePort` the created service will be a [nodeport service](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) that will expose Kafdrop in the  `nodePort` given.
+### Enable Kerberos
+
+This chart is prepared to enable [Kerberos authentication in Kafka](https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html#brokers)
+
+| Parameter | Description | Default |
+|---|---|---|
+| `kerberos.enabled` | Boolean to control if Kerberos is enabled. | `false` |
+| `kerberos.krb5Conf` | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `krb5.conf`, Kerberos [Configuration file](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) | `nil`**¹** |
+| `kerberos.keyTabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) | `nil`**¹** |
+| `serviceName` | Primary of the Principal (user, service, host) | |
+| `domain` | REALM of the Principal | `` |
+
+> **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist beforehand.
 
 ### Resources for Containers
 
@@ -121,4 +148,3 @@ Check the `values.yaml` for more advance configuration such as:
 - [Liveness and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)
 - [Pod Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 - [Container Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-- [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)

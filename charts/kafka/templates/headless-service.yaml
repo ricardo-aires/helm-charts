@@ -9,13 +9,13 @@ spec:
   clusterIP: None
   publishNotReadyAddresses: true
   ports:
-  - name: kafka-internal
+  - name: tcp-kafka-int
     port: {{ .Values.port.kafkaInternal }}
     protocol: TCP
-    targetPort: kafka-internal
-  - name: kafka-external
+    targetPort: tcp-kafka-int
+  - name: tcp-kafka-ext
     port: {{ .Values.port.kafkaExternal }}
     protocol: TCP
-    targetPort: kafka-external
+    targetPort: tcp-kafka-ext
   selector:
     {{- include "kafka.selectorLabels" . | nindent 4 }}

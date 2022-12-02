@@ -10,11 +10,14 @@ This chart bootstraps an ensemble [Apache Zookeeper](https://zookeeper.apache.or
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
-  - [Kubernetes](https://kubernetes.io) v1.21.2
-- [Helm](https://helm.sh) v3.6.3
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
+| component                                                                      | version |
+| ------------------------------------------------------------------------------ | ------- |
+| [Podman](https://docs.podman.io/en/latest/)                                    | v4.3.1  |
+| [Minikube](https://minikube.sigs.k8s.io/docs/)                                 | v1.28.0 |
+| [Kubernetes](https://kubernetes.io)                                            | v1.25.3 |
+| [Helm](https://helm.sh)                                                        | v3.10.2 |
+| [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) | v7.3.0  |
+| [Zookeeper](https://zookeeper.apache.org/doc/r3.6.3/index.html)                | v3.6.3  |
 
 ## Installing the Chart
 
@@ -27,9 +30,10 @@ helm repo add rhcharts https://ricardo-aires.github.io/helm-charts/
 To [install](https://helm.sh/docs/helm/helm_install/) the chart with the release name `zkp`:
 
 ```console
-$ helm install zkp rhcharts/zookeeper
+$ helm upgrade --install zkp rhcharts/zookeeper
+Release "zkp" does not exist. Installing it now.
 NAME: zkp
-LAST DEPLOYED: Mon Jul 19 11:49:48 2021
+LAST DEPLOYED: Mon Nov 21 15:49:17 2022
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
@@ -46,11 +50,10 @@ To connect to your ZooKeeper server run the following commands:
 
 More info:
 https://ricardo-aires.github.io/helm-charts/charts/zookeeper/
-
 $
 ```
 
-These commands deploy ZooKeeper on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+This command deploy ZooKeeper on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
 
 The chart will create the next resources:
 
@@ -85,7 +88,7 @@ You can specify each parameter using the `--set key=value[,key=value]` argument 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-helm install zkp -f my-values.yaml rhcharts/zookeeper
+helm upgrade --install zkp -f my-values.yaml rhcharts/zookeeper
 ```
 
 A default [values.yaml](./values.yaml) is available and should be checked for more advanced usage.
@@ -98,7 +101,7 @@ By default the [confluentinc/cp-zookeeper](https://hub.docker.com/r/confluentinc
 | ------------------ | --------------------------------------------- | --------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image. | `docker.io`                 |
 | `image.repository` | Docker Image of Confluent Zookeeper.          | `confluentinc/cp-zookeeper` |
-| `image.tag`        | Docker Image Tag of Confluent Zookeeper.      | `6.2.0`                     |
+| `image.tag`        | Docker Image Tag of Confluent Zookeeper.      | `7.3.0`                     |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -145,16 +148,29 @@ ZooKeeper default ports:
 
 Since 3.5.0 we may also set the [AdminServer](https://zookeeper.apache.org/doc/r3.6.1/zookeeperAdmin.html#sc_adminserver) which by default listens in the `8080` port but can be changed by setting the `port.admin` in the [AdminServer configuration](https://zookeeper.apache.org/doc/r3.6.1/zookeeperAdmin.html#sc_adminserver_config).
 
+### Enable Kerberos
+
+This chart is prepared to enable [Kerberos authentication in Zookeeper](https://docs.confluent.io/platform/current/security/zk-security.html#sasl-with-kerberos)
+
+| Parameter               | Description                                | Default |
+| ----------------------- | ------------------------------------------ | ------- |
+| `kerberos.enabled`      | Boolean to control if Kerberos is enabled. | `false` |
+| `kerberos.krb5Conf`     | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `krb5.conf`, Kerberos [Configuration file](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) | `nil`**¹** |
+| `kerberos.keyTabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) | `nil`**¹** |
+| `kerberos.jaasConf`     | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the JAAS configuration files per host.  | `nil`**¹** |
+
+> **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist before.
+
 ### Data Persistence
 
-The ZooKeeper server continually saves `znode` snapshot files and, optionally, transactional logs in a Data Directory to enable you to recover data.
+The ZooKeeper server continually saves `znode` snapshot files in a Data Directory to enable you to recover data, transactional logs in this deployment are store in a separated directory.
 
 | Parameter           | Description                                         | Default |
 | ------------------- | --------------------------------------------------- | ------- |
 | `data.storageClass` | Valid options: `nil`, `"-"`, or storage class name. | `nil`   |
-| `data.storageSize`  | Size for data dir.                                  | `2Gi`   |
+| `data.storageSize`  | Size for data dir.                                  | `1Gi`   |
 
-This will allow the creation of a [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) using a specific [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/). However, [Access Mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes).
+This will allow the creation of two [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) using a specific [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/) and the same size for both.
 
 ### Resources for Containers
 

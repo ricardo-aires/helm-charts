@@ -18,6 +18,7 @@ spec:
       labels:
         {{- include "zookeeper.selectorLabels" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ include "zookeeper.fullname" . }}-sa
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       affinity:
@@ -71,6 +72,14 @@ spec:
           value: {{ .Values.heapOpts | quote }}
         - name : ZOOKEEPER_SERVERS
           value: {{ include "zookeeper.serverlist" . }}
+        {{- if .Values.kerberos.enabled }}
+        - name: ZOOKEEPER_AUTH_PROVIDER_SASL
+          value: "org.apache.zookeeper.server.auth.SASLAuthenticationProvider"
+        - name: ZOOKEEPER_KERBEROS_REMOVE_HOST_FROM_PRINCIPAL
+          value: "true"
+        - name: ZOOKEEPER_KERBEROS_REMOVE_REALM_FROM_PRINCIPAL
+          value: "true"
+        {{- end }}
         - name: ZOOKEEPER_SERVER_ID
           valueFrom:
             fieldRef:
@@ -82,7 +91,11 @@ spec:
           ZK_FIX_HOST_REGEX="s/${HOSTNAME}\.[^:]*:/0.0.0.0:/g"
           ZOOKEEPER_SERVER_ID=$((${HOSTNAME##*-}+1)) \
           ZOOKEEPER_SERVERS=`echo $ZOOKEEPER_SERVERS | sed -e "$ZK_FIX_HOST_REGEX"` \
-          /etc/confluent/docker/run 
+          {{- if .Values.kerberos.enabled }}
+          KAFKA_OPTS="-Djava.security.krb5.conf=/etc/krb5.conf -Djava.security.auth.login.config=/jaas/${HOSTNAME}_jaas.conf -Dsun.security.krb5.debug=false \
+                      -Dzookeeper.kerberos.removeHostFromPrincipal=true -Dzookeeper.kerberos.removeRealmFromPrincipal=true" \
+          {{- end }}
+          /etc/confluent/docker/run
         ports:
         - name: tcp-client
           containerPort: {{ .Values.port.client }}
@@ -123,6 +136,17 @@ spec:
           mountPath: /etc/kafka
         - name: logs
           mountPath: /var/log
+        {{- if .Values.kerberos.enabled }}
+        - name: krb5
+          mountPath: /etc/krb5.conf
+          subPath: krb5.conf
+        - name: keytabs
+          mountPath: /keytabs
+          readOnly: true
+        - name: jaas
+          mountPath: /jaas
+          readOnly: true
+        {{- end }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
         resources:
@@ -132,6 +156,17 @@ spec:
         emptyDir: {}
       - name: logs
         emptyDir: {}
+      {{- if .Values.kerberos.enabled }}
+      - name: krb5
+        configMap:
+          name: {{ required "The .Values.kerberos.krb5Conf is required when kerberos enabled!" .Values.kerberos.krb5Conf }}
+      - name: keytabs
+        secret:
+          secretName: {{ required "The .Values.kerberos.keyTabSecret is required when kerberos enabled!" .Values.kerberos.keyTabSecret }}
+      - name: jaas
+        configMap:
+          name: {{ required "The .Values.kerberos.jaasConf is required when kerberos enabled!" .Values.kerberos.jaasConf }}
+      {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: data

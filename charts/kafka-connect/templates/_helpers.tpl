@@ -46,6 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "kafka-connect.selectorLabels" -}}
+app: {{ .Release.Name }}-{{ include "kafka-connect.name" . }}
 app.kubernetes.io/name: {{ include "kafka-connect.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
@@ -56,7 +57,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "kafka-connect.kafka.fullname" -}}
 {{- $name := default "kafka" (index .Values "kafka" "nameOverride") -}}
-{{- printf "%s-%s-headless" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -65,8 +66,13 @@ else use user-provided URL
 */}}
 {{- define "kafka-connect.kafka.bootstrapServers" -}}
 {{- if (index .Values "kafka" "enabled") -}}
+{{- $name := default "kafka"  (include "kafka-connect.kafka.fullname" .) -}}
+{{- $namespace := .Release.Namespace }}
 {{- $clientPort := 9092 | int -}}
-{{- printf "%s:%d" (include "kafka-connect.kafka.fullname" .) $clientPort }}
+{{- range $k, $e := until (.Values.kafka.replicaCount|int) -}}
+{{- if $k}}{{- printf ","}}{{end}}
+{{- printf "%s-%d.%s-headless.%s.svc.cluster.local:%d" $name $k $name $namespace $clientPort -}}
+{{- end -}}
 {{- else -}}
 {{- printf "%s" (index .Values "kafka" "bootstrapServers") }}
 {{- end -}}
@@ -78,7 +84,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "kafka-connect.schema-registry.fullname" -}}
 {{- $name := default "schema-registry" (index .Values "schema-registry" "nameOverride") -}}
-{{- printf "%s-%s-headless" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*

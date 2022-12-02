@@ -31,15 +31,28 @@ port: 8083
 ## Kafka Cluster Configuration
 kafka:
   ## If true, kafka was installed under the same umbrella
-  enabled: true
+  enabled: false
+  replicaCount: 3
   ## If outside or custom kafka a bootstrap server is required
   bootstrapServers: PLAINTEXT://ks-kafka-headless:9092
+  ## Kafka Broker Kerberos authentication
+  ## ref: https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html#kconnect-long
+  kerberos:
+    enabled: false
+    serviceName:
+    domain:
+
+## Kerberos configs
+kerberos:
+  krb5Conf:
+  keyTabSecret:
+  jaasConf:
 
 ## Schema Registry Configuration
 schema-registry:
   ## If true, schema-registry was installed under the same umbrella
   enabled: true
-  ## If outside or custom a URL and port are required to connect
+  ## If outside or custom a URL and port are required to connect. Remember to include the protocol http:// or https://
   url:
 
 ## Configure Liveness and Readiness Probes
@@ -77,7 +90,7 @@ securityContext:
 
 ## Configure Resources for Containers
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-resources: 
+resources:
   limits:
     cpu: 1
     memory: 1400Mi

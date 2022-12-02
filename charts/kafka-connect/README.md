@@ -10,12 +10,13 @@ Kafka Connect is an open source framework, part of Apache Kafka, to stream data 
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
-  - [Kubernetes](https://kubernetes.io) v1.21.2
-- [Helm](https://helm.sh) v3.6.3
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
+| component                                                                      | version |
+| ------------------------------------------------------------------------------ | ------- |
+| [Podman](https://docs.podman.io/en/latest/)                                    | v4.3.1  |
+| [Minikube](https://minikube.sigs.k8s.io/docs/)                                 | v1.28.0 |
+| [Kubernetes](https://kubernetes.io)                                            | v1.25.3 |
+| [Helm](https://helm.sh)                                                        | v3.10.2 |
+| [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) | v7.3.0  |
 
 ## Installing the Chart
 
@@ -82,7 +83,7 @@ By default the [confluentinc/cp-kafka-connect](https://hub.docker.com/r/confluen
 | ------------------ | ---------------------------------------------- | ------------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                     |
 | `image.repository` | Docker Image of Confluent Kafka Connect.       | `confluentinc/cp-kafka-connect` |
-| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `6.2.0`                         |
+| `image.tag`        | Docker Image Tag of Confluent Kafka Connect .  | `7.3.0`                         |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -108,9 +109,24 @@ The next configuration related to Kafka Connect are available:
 
 More information can be found in the [Confluent Documentation](https://docs.confluent.io/platform/current/connect/references/allconfigs.html).
 
-### Ports used by Schema Registry
+### Ports used by Kafka Connect
 
 By default the [Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) will expose the pods in the port `8083`, `port`.
+
+### Kerberos authentication
+
+This chart is prepared to enable [Kerberos authentication in Zookeeper](https://docs.confluent.io/platform/current/security/zk-security.html#sasl-with-kerberos)
+
+| Parameter               | Description                                | Default |
+| ----------------------- | ------------------------------------------ | ------- |
+| `kerberos.enabled`      | Boolean to control if Kerberos is enabled. | `false` |
+| `kerberos.krb5Conf`     | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `krb5.conf`, Kerberos [Configuration file](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) | `nil`**¹** |
+| `kerberos.keyTabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) | `nil`**¹** |
+| `kerberos.jaasConf`     | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the JAAS configuration files per host.  | `nil`**¹** |
+| `kafka.kerberos.serviceName` | Primary of the Principal (user, service, host) used to connect to Kafka Brokers | `nil` |
+| `kafka.kerberos.domain` | REALM of the Principal used to connect to Kafka Brokers | `nil` |
+
+> **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist before.
 
 ### Resources for Containers
 
@@ -125,9 +141,9 @@ Regarding the management of [Resources for Containers](https://kubernetes.io/doc
 
 In terms of the JVM the next default is set:
 
-| Parameter  | Description                            | Default                                                     |
-| ---------- | -------------------------------------- | ----------------------------------------------------------- |
-| `heapOpts` | The JVM Heap Options for Kafka Broker. | `"-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"` |
+| Parameter  | Description                               | Default                                                     |
+| ---------- | ----------------------------------------- | ----------------------------------------------------------- |
+| `heapOpts` | The JVM Heap Options for Kafka Connect.   | `"-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"` |
 
 ### Advance Configuration
 

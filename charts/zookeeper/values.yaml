@@ -41,11 +41,19 @@ port:
   admin: 8080
   client: 2181
 
+## Zookeeper Kerberos
+## ref: https://docs.confluent.io/platform/current/security/zk-security.html#sasl-with-kerberos
+kerberos:
+  enabled: false
+  krb5Conf:
+  keyTabSecret:
+  jaasConf:
+
 ## Data Persistence
 ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 data:
   storageClass:
-  storageSize: 2Gi
+  storageSize: 1Gi
 
 ## Configure Liveness and Readiness Probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes

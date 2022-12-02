@@ -46,9 +46,28 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "kafka.selectorLabels" -}}
+app: {{ .Release.Name }}-{{ include "kafka.name" . }}
 app.kubernetes.io/name: {{ include "kafka.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Create a default kafka fully qualified domain name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "kafka.listener" -}}
+{{- $namespace := .Release.Namespace }}
+{{- printf "${POD_NAME}.%s-headless.%s.svc.cluster.local" (include "kafka.fullname" .) $namespace | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create a default kafka bootstrap server name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "kafka.bootstrap.server" -}}
+{{- $namespace := .Release.Namespace }}
+{{- printf "%s-0.%s-headless.%s.svc.cluster.local" (include "kafka.fullname" .) (include "kafka.fullname" .) $namespace | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Create a default fully qualified zookeeper name.

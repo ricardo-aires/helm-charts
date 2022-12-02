@@ -10,12 +10,14 @@ ksqlDB is an event streaming database purpose-built to help developers create st
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
-  - [Kubernetes](https://kubernetes.io) v1.21.2
-- [Helm](https://helm.sh) v3.6.3
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
+| component                                                                      | version |
+| ------------------------------------------------------------------------------ | ------- |
+| [Podman](https://docs.podman.io/en/latest/)                                    | v4.3.1  |
+| [Minikube](https://minikube.sigs.k8s.io/docs/)                                 | v1.28.0 |
+| [Kubernetes](https://kubernetes.io)                                            | v1.25.3 |
+| [Helm](https://helm.sh)                                                        | v3.10.2 |
+| [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) | v7.3.0  |
+| [ksqlDB](https://docs.ksqldb.io/en/0.28.2-ksqldb/)                             | v0.28.2 |
 
 ## Installing the Chart
 
@@ -80,7 +82,7 @@ By default the [confluentinc/ksqldb-server](https://hub.docker.com/r/confluentin
 | ------------------ | ---------------------------------------------- | ---------------------------- |
 | `image.registry`   | Registry used to distribute the Docker Image.  | `docker.io`                  |
 | `image.repository` | Docker Image of ksqlDB.                        | `confluentinc/ksqldb-server` |
-| `image.tag`        | Docker Image Tag of ksqlDB.                    | `0.18.0`                      |
+| `image.tag`        | Docker Image Tag of ksqlDB.                    | `0.28.2`                      |
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
@@ -88,17 +90,31 @@ One can easily change the `image.tag` to use another version. When using a local
 
 #### Deploying ksqlDB in headless mode
 
-> For more information, see [Headless Deployment](https://docs.ksqldb.io/en/latest/operate-and-deploy/how-it-works/#headless-deployment).
+ksqlDB supports locked-down, "headless" deployment scenarios where interactive use of the ksqlDB cluster is disabled. For example, the CLI enables a team of users to develop and verify their queries interactively on a shared testing ksqlDB cluster. But when you deploy these queries in your production environment, you want to lock down access to ksqlDB servers, version-control the exact queries, and store them in a .sql file. This prevents users from interacting directly with the production ksqlDB cluster. For more information, see [Headless Deployment](https://docs.ksqldb.io/en/latest/operate-and-deploy/how-it-works/#headless-deployment).
 
-To enable headless mode in this chart, simply pass the name of a **ConfiMap** containing the sql script file:
+To enable headless mode in this chart, simply pass the name of a ConfiMap containing the sql script file:
 
-| Parameter  | Description                                | Default               |
-| ---------- | ------------------------------------------ | --------------------- |
-| `queriesFileCM` | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `queries.sql` script with all the ksql queries for a given use case | `nil` |
+| Parameter              | Description                                | Default               |
+| ---------------------- | ------------------------------------------ | --------------------- |
+| `queriesFileConfigMap` | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `queries.sql` script with all the ksql queries for a given use case | `nil` |
 
-### Ports used by Schema Registry
+### Ports used by ksqlDB
 
 By default the [Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) will expose the pods in the port `8088`, `port`.
+
+### Enable Kerberos
+
+This chart is prepared to enable [Kerberos authentication in Kafka](https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html#brokers)
+
+| Parameter | Description | Default |
+|---|---|---|
+| `kerberos.enabled` | Boolean to control if Kerberos is enabled. | `false` |
+| `kerberos.krb5Conf` | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `krb5.conf`, Kerberos [Configuration file](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) | `nil`**¹** |
+| `kerberos.keyTabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) | `nil`**¹** |
+| `serviceName` | Primary of the Principal (user, service, host) | |
+| `domain` | REALM of the Principal | `nil` |
+
+> **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist beforehand.
 
 ### Resources for Containers
 
@@ -107,15 +123,15 @@ Regarding the management of [Resources for Containers](https://kubernetes.io/doc
 | Parameter                   | Description                                                             | Default  |
 | --------------------------- | ----------------------------------------------------------------------- | -------- |
 | `resources.limits.cpu`      | a container cannot use more CPU than the configured limit               | `1`      |
-| `resources.limits.memory`   | a container cannot use more Memory than the configured limit            | `1400Mi` |
+| `resources.limits.memory`   | a container cannot use more Memory than the configured limit            | `3000Mi` |
 | `resources.requests.cpu`    | a container is guaranteed to be allocated as much CPU as it requests    | `250m`   |
-| `resources.requests.memory` | a container is guaranteed to be allocated as much Memory as it requests | `512Mi`  |
+| `resources.requests.memory` | a container is guaranteed to be allocated as much Memory as it requests | `1000Mi` |
 
 In terms of the JVM the next default is set:
 
-| Parameter  | Description                            | Default                                                     |
-| ---------- | -------------------------------------- | ----------------------------------------------------------- |
-| `heapOpts` | The JVM Heap Options for Kafka Broker. | `"-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"` |
+| Parameter  | Description                        | Default                                                     |
+| ---------- | ---------------------------------- | ----------------------------------------------------------- |
+| `heapOpts` | The JVM Heap Options for ksqlDB.   | `"-XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=50.0"` |
 
 ### Advance Configuration
 
@@ -124,4 +140,3 @@ Check the `values.yaml` for more advance configuration such as:
 - [Liveness and Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)
 - [Pod Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 - [Container Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-- [Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)

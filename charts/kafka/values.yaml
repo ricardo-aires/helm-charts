@@ -2,10 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Default values for zookeeper.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 ## Image Info
 ## ref: https://hub.docker.com/r/confluentinc/cp-kafka
 image:
@@ -57,6 +53,20 @@ externalAccess:
 ## turn to support nodePort in docker desktop
 isDocker: true
 
+## Kafka Broker Kerberos
+## ref: https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html#brokers
+kerberos:
+  enabled: false
+  krb5Conf:
+  keyTabSecret:
+  testUserKeytabSecret:
+  kafkaCltProperties:
+
+## Authorization using ACLs
+## ref: https://docs.confluent.io/platform/current/kafka/authorization.html
+acls:
+  enabled: false
+
 ## Zookeeper Configuration
 ## ref: https://docs.confluent.io/platform/current/zookeeper/deployment.html
 zookeeper:
@@ -68,21 +78,21 @@ zookeeper:
 ## Data Persistence
 ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 data:
-  storageClass: 
+  storageClass:
   storageSize: 10Gi
 
 ## Configure Liveness and Readiness Probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
 livenessProbe:
   enabled: true
-  initialDelaySeconds: 30
+  initialDelaySeconds: 300
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 6
   successThreshold: 1
 readinessProbe:
   enabled: true
-  initialDelaySeconds: 10
+  initialDelaySeconds: 120
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 6
@@ -106,7 +116,7 @@ securityContext:
 
 ## Configure Resources for Containers
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-resources: 
+resources:
   limits:
     cpu: 1
     memory: 1400Mi

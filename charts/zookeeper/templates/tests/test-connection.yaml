@@ -15,11 +15,20 @@ metadata:
     {{- include "zookeeper.labels" $root | nindent 4 }}
   annotations:
     "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
+  serviceAccountName: {{ $fullName }}-sa
   containers:
     - name: wget
       image: busybox
       command: ['wget']
       args: ['-qO-', '{{ $targetPod}}.{{ $fullName }}-headless:{{ $port }}/commands/srvr']
+      resources:
+        requests:
+          memory: "200Mi"
+          cpu: "10m"
+        limits:
+          memory: "200Mi"
+          cpu: "10m"
   restartPolicy: Never
 {{- end }}

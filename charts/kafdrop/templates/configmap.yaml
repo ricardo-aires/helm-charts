@@ -1,0 +1,17 @@
+{{- if .Values.kerberos.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kafdrop.fullname" . }}
+  labels:
+    {{- include "kafdrop.labels" . | nindent 4 }}
+data:
+  kafka.properties: |-
+    security.protocol=SASL_PLAINTEXT
+    sasl.kerberos.service.name=kafka
+    sasl.jaas.config=com.sun.security.auth.module.Krb5LoginModule required \
+        useKeyTab=true \
+        storeKey=true \
+        keyTab="/keytabs/{{ .Values.kerberos.serviceName }}.keytab" \
+        principal="{{ .Values.kerberos.serviceName }}@{{ .Values.kerberos.domain }}";
+{{- end }}

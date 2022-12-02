@@ -1,6 +1,6 @@
 # kstack
 
-A Helm chart for kstack on Kubernetes
+A Helm chart to deploy the Data Platform's Kafka environment, and related services, on Kubernetes
 
 ## Introduction
 
@@ -8,7 +8,7 @@ This chart serves as an umbrella to the next charts:
 
 ### Confluent
 
-Helm charts that deploy components of the [Confluent Platform](https://www.confluent.io/product/confluent-platform) (open source and community).
+Components of the [Confluent Platform](https://www.confluent.io/product/confluent-platform) (open source and community) that can be deployed by this chart:
 
 - [Zookeeper](../zookeeper/)
 - [Kafka](../kafka/)
@@ -20,17 +20,16 @@ Helm charts that deploy components of the [Confluent Platform](https://www.confl
 ### Other Kafka Tools
 
 - [Kafrdop](../kafdrop/)
-- [Schema Registry UI](../schema-registry-ui)
-- [kafka Connect UI](../kafka-connect-ui)
 
 ## Developing Environment
 
-- [Docker Desktop](https://www.docker.com/get-started) for Mac 3.5.2
-  - [Kubernetes](https://kubernetes.io) v1.21.2
-- [Helm](https://helm.sh) v3.6.3
-- [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) 6.2.0
-  - [Zookeeper](https://zookeeper.apache.org/doc/r3.6.2/index.html) 3.5.9
-  - [Kafka](https://kafka.apache.org/27/documentation.html) 2.8
+| component                                                                      | version |
+| ------------------------------------------------------------------------------ | ------- |
+| [Podman](https://docs.podman.io/en/latest/)                                    | v4.3.1  |
+| [Minikube](https://minikube.sigs.k8s.io/docs/)                                 | v1.28.0 |
+| [Kubernetes](https://kubernetes.io)                                            | v1.25.3 |
+| [Helm](https://helm.sh)                                                        | v3.10.2 |
+| [Confluent Platform](https://docs.confluent.io/platform/current/overview.html) | v7.3.0  |
 
 ## Installing the Chart
 
@@ -39,6 +38,17 @@ Add the [chart repository](https://helm.sh/docs/helm/helm_repo_add/), if not don
 ```shell
 helm repo add rhcharts https://ricardo-aires.github.io/helm-charts/
 ```
+
+To search a specific [available chart](https://helm.sh/docs/helm/helm_search_repo/)
+
+```console
+$ helm search repo zookeeper
+NAME                    CHART VERSION   APP VERSION     DESCRIPTION
+rhcharts/zookeeper  0.2.2           6.1.1           A Helm chart for Confluent Zookeeper on Kubernetes
+
+```
+
+> If no keyword is used all charts will be listed.
 
 Run the installer with the default configuration.
 
@@ -67,7 +77,7 @@ You can specify each parameter using the `--set key=value[,key=value]` argument 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-helm install ktool -f my-values.yaml rhcharts/kstack
+helm install ktool -f my-values.yaml hrhcharts/kstack
 ```
 
 A default [values.yaml](./values.yaml) is available and should be checked for more advanced usage. Example:
@@ -75,7 +85,6 @@ A default [values.yaml](./values.yaml) is available and should be checked for mo
 ```yaml
 kafka:
   enabled: true
-  heapOpts: -Xmx2048m -Xms2048m
   data:
     storageSize: 20Gi
   zookeeper:

@@ -18,9 +18,9 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: kafka-external
+  - name: tcp-kafka-ext
     protocol: TCP
-    targetPort: kafka-external
+    targetPort: tcp-kafka-ext
     port: 9094
     nodePort: {{ add $initNodePort $i }}
   selector:

@@ -46,6 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "kafka-rest.selectorLabels" -}}
+app: {{ .Release.Name }}-{{ include "kafka-rest.name" . }}
 app.kubernetes.io/name: {{ include "kafka-rest.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
@@ -56,7 +57,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "kafka-rest.kafka.fullname" -}}
 {{- $name := default "kafka" (index .Values "kafka" "nameOverride") -}}
-{{- printf "%s-%s-headless" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -65,12 +66,18 @@ else use user-provided URL
 */}}
 {{- define "kafka-rest.kafka.bootstrapServers" -}}
 {{- if (index .Values "kafka" "enabled") -}}
+{{- $name := default "kafka"  (include "kafka-rest.kafka.fullname" .) -}}
+{{- $namespace := .Release.Namespace }}
 {{- $clientPort := 9092 | int -}}
-{{- printf "%s:%d" (include "kafka-rest.kafka.fullname" .) $clientPort }}
+{{- range $k, $e := until (.Values.kafka.replicaCount|int) -}}
+{{- if $k}}{{- printf ","}}{{end}}
+{{- printf "%s-%d.%s-headless.%s.svc.cluster.local:%d" $name $k $name $namespace $clientPort -}}
+{{- end -}}
 {{- else -}}
 {{- printf "%s" (index .Values "kafka" "bootstrapServers") }}
 {{- end -}}
 {{- end -}}
+
 
 {{/*
 Create a default fully qualified schema registry name.
@@ -78,7 +85,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "kafka-rest.schema-registry.fullname" -}}
 {{- $name := default "schema-registry" (index .Values "schema-registry" "nameOverride") -}}
-{{- printf "%s-%s-headless" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -88,7 +95,7 @@ else use user-provided URL
 {{- define "kafka-rest.schema-registry.url" -}}
 {{- if (index .Values "schema-registry" "enabled") -}}
 {{- $clientPort := 8081 | int -}}
-{{- printf "%s:%d" (include "kafka-rest.schema-registry.fullname" .) $clientPort }}
+{{- printf "http://%s:%d" (include "kafka-rest.schema-registry.fullname" .) $clientPort }}
 {{- else -}}
 {{- printf "%s" (index .Values "schema-registry" "url") }}
 {{- end -}}
