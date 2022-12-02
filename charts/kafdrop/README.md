@@ -81,6 +81,8 @@ By default the [obsidiandynamics/kafdrop](https://hub.docker.com/r/obsidiandynam
 
 One can easily change the `image.tag` to use another version. When using a local/proxy docker registry we must change `image.registry` as well.
 
+> The image is not being built for `arm`, see [issue](https://github.com/obsidiandynamics/kafdrop/issues/443), as a workaround we can use this [image](https://github.com/arm64-compat/kafdrop/pkgs/container/kafdrop)
+
 ### Command Arguments
 
 By default no extra arguments are passed, it can be change using
@@ -118,7 +120,7 @@ This chart is prepared to enable [Kerberos authentication in Kafka](https://docs
 | `kerberos.krb5Conf` | Name of the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) that stores the `krb5.conf`, Kerberos [Configuration file](https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html) | `nil`**¹** |
 | `kerberos.keyTabSecret` | Name of the [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) that stores the [Keytab](https://web.mit.edu/kerberos/krb5-1.19/doc/basic/keytab_def.html) | `nil`**¹** |
 | `serviceName` | Primary of the Principal (user, service, host) | |
-| `domain` | REALM of the Principal | `BFL.LOCAL` |
+| `domain` | REALM of the Principal | `` |
 
 > **¹** When `kerberos.enabled` these parameters are required, and the [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) need to exist beforehand.
 
