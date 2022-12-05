@@ -14,16 +14,17 @@ To list [available charts](https://helm.sh/docs/helm/helm_search_repo/)
 
 ```shell
 $ helm search repo
-NAME                    	CHART VERSION	APP VERSION	DESCRIPTION
-rhcharts/kafdrop        	0.1.0        	3.27.0     	A Helm chart for Kafdrop on Kubernetes
-rhcharts/kafka          	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka on Kubernetes
-rhcharts/kafka-connect  	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka Connect on Kub...
-rhcharts/kafka-rest     	0.1.0        	6.1.0      	A Helm chart for Confluent Kafka REST on Kubern...
-rhcharts/ksqldb         	0.1.0        	0.15.0     	A Helm chart for Confluent ksqlDB on Kubernetes
-rhcharts/kstack         	0.1.0        	6.1.0      	A Helm chart for Confluent Platform on Kubernetes
-rhcharts/schema-registry	0.1.0        	6.1.0      	A Helm chart for Confluent Schema Registry on K...
-rhcharts/zookeeper      	0.1.0        	6.1.1      	A Helm chart for Confluent Zookeeper on Kubernetes
-
+NAME                       	CHART VERSION	APP VERSION	DESCRIPTION
+rhcharts/kafdrop           	0.2.0        	3.30.0     	A Helm chart for Kafdrop on Kubernetes
+rhcharts/kafka             	0.2.0        	7.3.0      	A Helm chart for Confluent Kafka on Kubernetes
+rhcharts/kafka-connect     	0.2.0        	7.3.0      	A Helm chart for Confluent Kafka Connect on Kub...
+rhcharts/kafka-connect-ui  	0.1.0        	latest     	A Helm chart for Landoop Kafka Connect UI on Ku...
+rhcharts/kafka-rest        	0.2.0        	7.3.0      	A Helm chart for Confluent Kafka REST on Kubern...
+rhcharts/ksqldb            	0.2.0        	0.28.2     	A Helm chart for Confluent ksqlDB on Kubernetes
+rhcharts/kstack            	0.2.0        	7.3.0      	A Helm chart for Confluent Platform on Kubernetes
+rhcharts/schema-registry   	0.2.0        	7.3.0      	A Helm chart for Confluent Schema Registry on K...
+rhcharts/schema-registry-ui	0.1.0        	latest     	A Helm chart for Landoop Schema Registry UI on ...
+rhcharts/zookeeper         	0.2.0        	7.3.0      	A Helm chart for Confluent Zookeeper on Kubernetes
 $
 ```
 
@@ -65,5 +66,5 @@ Helm charts that deploy components of the [Confluent Platform](https://www.confl
 
 ### Other Kafka Tools
 
-- [Kafrdop](./charts/kafdrop/)
+- [Kafdrop](./charts/kafdrop/)
 - [kstack](./charts/kstack) - Umbrella Chart that can spin all the Kafka Components
