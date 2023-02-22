@@ -83,6 +83,10 @@ readinessProbe:
   failureThreshold: 6
   successThreshold: 1
 
+## Configure nodeSelector Node labels for pod assignment                                                                                                                                         ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+## ref:  https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+nodeSelector: {}
+
 ## Configure Pod Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 podSecurityContext: 
