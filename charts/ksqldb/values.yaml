@@ -107,3 +107,8 @@ resources:
   requests:
     cpu: 1
     memory: 2000Mi
+
+## Configure nodeSelector Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+## ref:  https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+nodeSelector: {}
