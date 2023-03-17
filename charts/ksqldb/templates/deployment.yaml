@@ -24,7 +24,15 @@ spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       nodeSelector:
       {{- if .Values.nodeSelector }}
-        {{ toYaml .Values.nodeSelector | indent 8 }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- if .Values.tolerations }}
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      {{- end }}
+      affinity:
+      {{- if .Values.affinity }}
+        {{- toYaml .Values.affinity | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
