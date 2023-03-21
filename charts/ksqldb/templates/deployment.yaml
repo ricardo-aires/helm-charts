@@ -83,6 +83,10 @@ spec:
             - name: KSQL_SASL_JAAS_CONFIG
               value: com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab="/keytabs/{{ .Values.kerberos.serviceName }}.keytab" principal="{{ .Values.kerberos.serviceName }}@{{ .Values.kerberos.domain }}";
             {{- end }}
+            {{- range $key, $value := .Values.configurationOverrides }}
+            - name: {{ printf "KSQL_%s" $key | replace "." "_" | upper | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
           ports:
             - name: tcp
               containerPort: {{ .Values.port }}
