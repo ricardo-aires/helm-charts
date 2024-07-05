@@ -146,6 +146,7 @@ spec:
           {{- else }}
           export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://{{ include "kafka.listener" . }}:{{ .Values.port.kafkaInternal }},EXTERNAL://${HOST_IP}:$(({{ .Values.externalAccess.initNodePort }} + ${KAFKA_BROKER_ID})) && \
           {{- end }}
+          rm -rf /var/lib/kafka/data/lost+found && \
           exec /etc/confluent/docker/run
         ports:
         - name: tcp-kafka-int

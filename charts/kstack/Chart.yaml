@@ -1,6 +1,6 @@
 apiVersion: v2
 name: kstack
-version: 0.2.3
+version: 0.2.4
 description: A Helm chart for Confluent Platform on Kubernetes
 type: application
 keywords:
@@ -13,7 +13,7 @@ sources:
   - https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 dependencies:
   - name: kafka
-    version: 0.2.0
+    version: 0.2.1
     repository: https://ricardo-aires.github.io/helm-charts/
     condition: kafka.enabled
     alias: kafka
